@@ -44,6 +44,9 @@ class Align:
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while (i, j) != (-1, -1):
             path = path_matrix[i+1][j+1]
+            paths = []
+            paths.append(path)
+            self.paths = paths
             letter1 = seq1[i]
             letter2 = seq2[j]
             match = " "
@@ -74,10 +77,10 @@ class Align:
 
         # Initialize border rows and columns with gap penalties
         for i in range(1, m+1):
-            alignment_matrix[i][0] = alignment_matrix[i-1][0] + self.gap
+            alignment_matrix[i][0] = i * self.gap
             path_matrix[i][0] = 1 # Backtrack left (traveled right)
         for j in range(1, n+1):
-            alignment_matrix[0][j] = alignment_matrix[0][j-1] + self.gap
+            alignment_matrix[0][j] = j * self.gap
             path_matrix[0][j] = 2 # Backtrack up (traveled down)
 
         # Assign scores at each position in the matrix for possible movements
@@ -96,5 +99,7 @@ class Align:
                     path_matrix[i][j] = 2
                 else:
                     path_matrix[i][j] = 1
+
+        self.path_matrix = path_matrix
 
         return alignment_matrix, path_matrix

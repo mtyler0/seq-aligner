@@ -34,7 +34,7 @@ class Align:
     def get_alignment(self, seq1, seq2):
         # Returns alignment string and score through backtracking
         alignment_matrix, path_matrix = self.needleman_algo(seq1, seq2)
-        alignment_score = alignment_matrix[-1][-1]
+        score = alignment_matrix[-1][-1]
         top = ""
         matches = ""
         bottom = ""
@@ -46,7 +46,7 @@ class Align:
             path = path_matrix[i+1][j+1]
             letter1 = seq1[i]
             letter2 = seq2[j]
-            match = ""
+            match = " "
 
             if path == 0:
                 i -= 1
@@ -64,7 +64,7 @@ class Align:
             bottom = letter2 + bottom
             matches = match + matches
 
-        return f"{top}\n{matches}\n{bottom}\nScore: {alignment_score}"
+        return f"{top}\n{matches}\n{bottom}\nScore: {score}"
 
     def needleman_algo(self, seq1, seq2):
         # Returns scoring matrix based on inputs

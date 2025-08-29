@@ -9,7 +9,6 @@ def main():
 
     ex = Align()
     print(ex.get_alignment(sequence1, sequence2))
-    print(ex.scoring_matrix)
 
     print("Run executed")
 

@@ -41,6 +41,7 @@ class Align:
         bottom = "" # Query strand w/ gaps
         i = len(seq1) - 1
         j = len(seq2) - 1
+        match_counter = 0
 
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while (i, j) != (-1, -1):
@@ -53,7 +54,8 @@ class Align:
                 i -= 1
                 j -= 1
                 if letter1 == letter2:
-                    match = "|"
+                    match_identifier = "|"
+                    match_counter += 1
             elif path == 2:
                 i -= 1
                 letter2 = "-"
@@ -65,7 +67,10 @@ class Align:
             bottom = letter2 + bottom
             matches = match_identifier + matches
 
-        return f"{top}\n{matches}\n{bottom}\nScore: {score}"
+        final_length = len(top)
+        percent_identity = (match_counter/final_length) * 100
+
+        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.2f}"
 
 
     def _initialize_matrices(self, seq1, seq2):

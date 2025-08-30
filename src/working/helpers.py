@@ -1,11 +1,30 @@
 """
-
-8/22/25
-Michael Tyler
-
+Michael Tyler 8/22/25
 """
 
 import numpy as np
+
+
+def get_blosum_matrix(blosum_file):
+    """
+    Returns a scoring matrix from .txt file
+
+    :param blosum_filepath: path to blosum62 matrix (for protein alignment)
+    :return: nested dictionary scoring matrix
+    """
+    with open(blosum_file) as b:
+        header = b.readline().upper().strip().replace('  ', ' ')
+        species = header.split(' ')
+        final_matrix = {}
+        for line in b.readlines():
+            row = line.upper().strip().replace('  ', ' ').split(' ')
+            species2 = row[0]
+            species2_score = {}
+            for i in range(len(species)):
+                species2_score[species[i]] = int(row[i+1])
+            final_matrix[species2] = species2_score
+        return final_matrix
+
 
 def get_fasta_seq(fasta_file):
     """
@@ -18,18 +37,22 @@ def get_fasta_seq(fasta_file):
     with open(fasta_file) as fasta:
         contents = fasta.read().upper()
         sequence = contents.split("\n")[1].strip("\n")
+
         return sequence
+
 
 class Align:
     """
     Runs Needleman-Wunsch algo
-    Requires scoring matrix
+    Requires blosum62 for proteins
     """
 
-    def __init__(self, match=1, mismatch=-1, gap=-2):
+    def __init__(self, molecule, blosum_matrix=None, match=1, mismatch=-1, gap=-2):
         self.match = match
         self.mismatch = mismatch
         self.gap = gap
+        self.blosum = blosum_matrix
+        self.is_nucleotide = molecule.lower() == "dna"
 
 
     def get_alignment(self, seq1, seq2):
@@ -42,6 +65,8 @@ class Align:
         i = len(seq1) - 1
         j = len(seq2) - 1
         match_counter = 0
+        gaps = 0
+        gaps2 = 0
 
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while (i, j) != (-1, -1):
@@ -59,18 +84,21 @@ class Align:
             elif path == 2:
                 i -= 1
                 letter2 = "-"
+                gaps += 1
             else:
                 j -= 1
                 letter1 = "-"
+                gaps2 += 1
 
             top = letter1 + top
             bottom = letter2 + bottom
             matches = match_identifier + matches
+            gap = max(gaps, gaps2)
 
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
 
-        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.2f}"
+        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.2f}\nGaps: {gap}"
 
 
     def _initialize_matrices(self, seq1, seq2):
@@ -86,6 +114,7 @@ class Align:
         for j in range(1, n+1):
             scoring_matrix[0][j] = j * self.gap
             path_matrix[0][j] = 2 # Backtrack up (traveled down)
+
         return scoring_matrix, path_matrix
 
 
@@ -96,7 +125,10 @@ class Align:
 
         for i in range(1, m+1):
             for j in range(1, n+1):
-                diagonal_score = scoring_matrix[i-1][j-1] + (self.match if seq1[i-1] == seq2[j-1] else self.mismatch)
+                if self.is_nucleotide:
+                    diagonal_score = scoring_matrix[i-1][j-1] + (self.match if seq1[i-1] == seq2[j-1] else self.mismatch)
+                else:
+                    diagonal_score = scoring_matrix[i-1][j-1] + self.blosum[seq1[i-1]][seq2[j-1]]
                 down_score = scoring_matrix[i-1][j] + self.gap
                 right_score = scoring_matrix[i][j-1] + self.gap
                 score = max(diagonal_score, right_score, down_score)

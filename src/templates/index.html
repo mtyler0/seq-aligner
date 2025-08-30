@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="content">
+        <h1>Needleman-Wunsch Global Sequence Alignment Tool</h1>
+    </div>
+    <div class="upload">
+        <form action="">
+            <label for="myfile">Upload a query sequence:</label>
+            <input type="file" id="seq1file" name="seq1file" multiple><br>
+        </form>
+
+        <form action="">
+            <label for="myfile">Upload a subject sequence:</label>
+            <input type="file" id="seq2file" name="seq2file" multiple><br>
+            <input type="submit">
+        </form>
+    </div>
+    <div>
+    <p>Alignment of {{ seq1 }} and {{ seq2 }}:</p>
+        <pre>{{ alignment }}</pre>
+    </div>
+</body>
+</html>

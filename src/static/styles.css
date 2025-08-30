@@ -1,0 +1,24 @@
+html {
+    font-family: cursive;
+}
+
+body {
+    background-color: rgba(165, 0, 0, 0.603);
+}
+
+h1 {
+    color: rgb(0, 0, 0);
+}
+
+input[type="file"] {
+      border: 2px solid rgb(0, 0, 0);
+      font-family: cursive;
+    }
+
+label[for="myfile"]{
+    font-size: 18px;
+}
+
+pre{
+    font-size: 20px;
+}

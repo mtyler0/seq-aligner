@@ -37,8 +37,13 @@ def get_fasta_seq(fasta_file):
     with open(fasta_file) as fasta:
         contents = fasta.read().upper()
         sequence = contents.split("\n")[1].strip("\n")
+        if "\\" in fasta_file:
+            name_start = fasta_file.index("\\") + 1
+            name = fasta_file[name_start:]
+        else:
+            name = fasta_file
 
-        return sequence
+        return name, sequence
 
 
 class Align:
@@ -98,7 +103,7 @@ class Align:
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
 
-        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
+        return f"{top}\n{matches}\n{bottom}\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
 
 
     def _initialize_matrices(self, seq1, seq2):

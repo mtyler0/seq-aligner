@@ -47,7 +47,7 @@ class Align:
     Requires blosum62 for proteins
     """
 
-    def __init__(self, molecule, blosum_matrix=None, match=1, mismatch=-1, gap=-2):
+    def __init__(self, molecule, blosum_matrix, match=1, mismatch=-1, gap=-2):
         self.match = match
         self.mismatch = mismatch
         self.gap = gap
@@ -98,7 +98,7 @@ class Align:
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
 
-        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.2f}\nGaps: {gap}"
+        return f"{top}\n{matches}\n{bottom}\nScore: {score}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
 
 
     def _initialize_matrices(self, seq1, seq2):

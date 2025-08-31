@@ -8,23 +8,30 @@
 </head>
 <body>
     <div class="content">
-        <h1>Needleman-Wunsch Global Sequence Alignment Tool</h1>
-    </div>
-    <div class="upload">
-        <form action="">
-            <label for="myfile">Upload a query sequence:</label>
-            <input type="file" id="seq1file" name="seq1file" multiple><br>
-        </form>
-
-        <form action="">
-            <label for="myfile">Upload a subject sequence:</label>
-            <input type="file" id="seq2file" name="seq2file" multiple><br>
-            <input type="submit">
-        </form>
-    </div>
-    <div>
-    <p>Alignment of {{ seq1 }} and {{ seq2 }}:</p>
-        <pre>{{ alignment }}</pre>
+        <div class="pageTitle">Needleman-Wunsch Global Sequence Alignment Tool</div>
+        <div class="entry">
+            <form action="">
+                <label for="myseq">Enter a query sequence:</label><br>
+                <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
+                </textarea><br>
+                <label for="myfile">Upload</label>
+                <input type="file" id="seq1file" name="seq1file">
+            </form>
+        </div>
+        <div class="entry">
+            <form action="">
+                <label for="myseq">Enter a subject sequence:</label><br>
+                <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
+                </textarea><br>
+                <label for="myfile">Upload</label>
+                <input type="file" id="seq2file" name="seq2file">
+            </form>
+        </div>
+        <div class="submit"><input type="submit"></div>
+        <div id="aligner">
+            <label for="aligned">Alignment of {{ seq1 }} and {{ seq2 }}:</label>
+            <pre>{{ alignment }}</pre>
+        </div>
     </div>
 </body>
 </html>

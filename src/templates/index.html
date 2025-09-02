@@ -7,30 +7,37 @@
     <title>Document</title>
 </head>
 <body>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='/images/fluxaipfp.jpg') }}" alt="Not Here" width="100" height="100">
+    </div>
     <div class="content">
-        <div class="pageTitle">Needleman-Wunsch Global Sequence Alignment Tool</div>
+        <div class="pageTitle">Sequence Alignment Tool</div>
         <div class="entry">
             <form action="">
-                <label for="myseq">Enter a query sequence:</label><br>
+                <label for="myseq">Enter a query sequence:</label><br><br>
                 <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
-                </textarea><br>
+                </textarea><br><br>
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq1file" name="seq1file">
             </form>
         </div>
         <div class="entry">
             <form action="">
-                <label for="myseq">Enter a subject sequence:</label><br>
+                <label for="myseq">Enter a subject sequence:</label><br><br>
                 <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
-                </textarea><br>
+                </textarea><br><br>
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq2file" name="seq2file">
             </form>
         </div>
         <div class="submit"><input type="submit"></div>
         <div id="aligner">
-            <label for="aligned">Alignment of {{ seq1 }} and {{ seq2 }}:</label>
-            <pre>{{ alignment }}</pre>
+            <label for="aligned">Needleman-Wunsch alignment of {{ nw_seq1 }} and {{ nw_seq2 }}:</label>
+            <pre>{{ nw_alignment }}</pre>
+        </div>
+        <div id="sw_aligner">
+            <label for="alignedsw">Smith-Waterman alignment of {{ sw_seq1 }} and {{ sw_seq2 }}:</label>
+            <pre>{{ sw_alignment }}</pre>
         </div>
     </div>
 </body>

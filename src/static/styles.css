@@ -1,6 +1,6 @@
 html {
     font-family: Arial, Helvetica, sans-serif;
-    color:rgb(0, 0, 0);
+    color:rgb(221, 221, 221);
     text-align: center;
 }
 
@@ -11,13 +11,18 @@ html {
     margin-bottom: 50px;
 }
 
+
 body {
-    background-color: rgb(106, 101, 101);
+    background-color: #1d2a35;
 }
 
 label {
     font-size: 18px;
     font-weight: bold;
+    background-color: rgb(3, 103, 103);
+    border: 2px solid black;
+    padding: 4px;
+
 }
 
 label[for="aligned"] {
@@ -36,6 +41,10 @@ input[type="file"] {
     margin-right: 2px;
     border-left: 2px solid #252525;
     padding-left: 12px;
+}
+
+label[for="myfile"] {
+    margin-left: 70px;
 }
 
 pre {

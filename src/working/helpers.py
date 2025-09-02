@@ -182,37 +182,39 @@ class AlignSW:
         gaps2 = 0
         (maxi, maxj) = max_index
 
+
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while path_matrix[maxi, maxj] != self.stop:
-            path = path_matrix[i, j]
-            letter1 = seq1[i]
-            letter2 = seq2[j]
+            path = path_matrix[maxi, maxj]
+            letter1 = seq1[maxi]
+            letter2 = seq2[maxj]
             match_identifier = " "
 
-            if path == 0:
-                i -= 1
-                j -= 1
-                if letter1 == letter2:
-                    match_identifier = "|"
-                    match_counter += 1
-            elif path == 2:
-                i -= 1
-                letter2 = "-"
-                gaps += 1
-            else:
-                j -= 1
+            if path == self.diagonal:
+                letter1 = seq1[maxi - 1]
+                letter2 = seq2[maxj - 1]
+                maxi -= 1
+                maxj -= 1
+                match_identifier = "|"
+                match_counter += 1
+            elif path == self.left:
                 letter1 = "-"
+                gaps += 1
+                maxj -= 1
+            elif path == self.up:
+                letter2 = "-"
                 gaps2 += 1
+                maxj -= 1
 
+            # Build sequence in proper order
             top = letter1 + top
             bottom = letter2 + bottom
             matches = match_identifier + matches
-            gap = max(gaps, gaps2)
-
+            
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
 
-        return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
+        return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}%"
 
 
     def _initialize_matrices(self, seq1, seq2):

@@ -58,52 +58,10 @@ class AlignNW:
         self.gap = gap
         self.blosum = blosum_matrix
         self.is_nucleotide = molecule.lower() == "dna"
-
-
-    def get_alignment(self, seq1, seq2):
-        # Returns alignment string and score through backtracking
-        scoring_matrix, path_matrix = self.run_needleman_algo(seq1, seq2)
-        score = scoring_matrix[-1, -1]
-        top = "" # Reference strand w/ gaps
-        matches = "" # Visual confirmation of match
-        bottom = "" # Query strand w/ gaps
-        i = len(seq1) - 1
-        j = len(seq2) - 1
-        match_counter = 0
-        gaps = 0
-        gaps2 = 0
-
-        # Backtrack starting at bottom right of matrix and build alignment string based on path score until
-        while (i, j) != (-1, -1):
-            path = path_matrix[i+1, j+1]
-            letter1 = seq1[i]
-            letter2 = seq2[j]
-            match_identifier = " "
-
-            if path == 0:
-                i -= 1
-                j -= 1
-                if letter1 == letter2:
-                    match_identifier = "|"
-                    match_counter += 1
-            elif path == 2:
-                i -= 1
-                letter2 = "-"
-                gaps += 1
-            else:
-                j -= 1
-                letter1 = "-"
-                gaps2 += 1
-
-            top = letter1 + top
-            bottom = letter2 + bottom
-            matches = match_identifier + matches
-            gap = max(gaps, gaps2)
-
-        final_length = len(top)
-        percent_identity = (match_counter/final_length) * 100
-
-        return f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
+        self.stop = 0
+        self.diagonal = 1
+        self.left = 2
+        self.up = 3
 
 
     def _initialize_matrices(self, seq1, seq2):
@@ -115,10 +73,10 @@ class AlignNW:
         # Initialize border rows and columns with gap penalties
         for i in range(1, m+1):
             scoring_matrix[i, 0] = i * self.gap
-            path_matrix[i, 0] = 1 # Backtrack left (traveled right)
+            path_matrix[i, 0] = self.left # Backtrack left (traveled right)
         for j in range(1, n+1):
             scoring_matrix[0, j] = j * self.gap
-            path_matrix[0, j] = 2 # Backtrack up (traveled down)
+            path_matrix[0, j] = self.up # Backtrack up (traveled down)
 
         return scoring_matrix, path_matrix
 
@@ -141,11 +99,11 @@ class AlignNW:
 
                 # Populate path matrix for backtracking based on travel score
                 if score == diagonal_score:
-                    path_matrix[i, j] = 0
+                    path_matrix[i, j] = self.diagonal
                 elif score == vert_score:
-                    path_matrix[i, j] = 2
+                    path_matrix[i, j] = self.up
                 else:
-                    path_matrix[i, j] = 1
+                    path_matrix[i, j] = self.left
 
         self.path_matrix = path_matrix
         self.scoring_matrix = scoring_matrix
@@ -153,13 +111,59 @@ class AlignNW:
         return scoring_matrix, path_matrix
 
 
+    def get_alignment(self, seq1, seq2):
+        # Returns alignment string and score through backtracking
+        scoring_matrix, path_matrix = self.run_needleman_algo(seq1, seq2)
+        score = scoring_matrix[-1, -1]
+        top = "" # Reference strand w/ gaps
+        matches = "" # Visual confirmation of match
+        bottom = "" # Query strand w/ gaps
+        i = len(seq1) - 1
+        j = len(seq2) - 1
+        match_counter = 0
+        gaps = 0
+        gaps2 = 0
+
+        # Backtrack starting at bottom right of matrix and build alignment string based on path score until
+        while (i, j) != (-1, -1):
+            path = path_matrix[i+1, j+1]
+            current_aligned1 = seq1[i]
+            current_aligned2 = seq2[j]
+            match_identifier = " "
+
+            if path == self.diagonal:
+                i -= 1
+                j -= 1
+                if current_aligned1 == current_aligned2:
+                    match_identifier = "|"
+                    match_counter += 1
+            elif path == self.up:
+                i -= 1
+                current_aligned2 = "-"
+                gaps += 1
+            elif path == self.left:
+                j -= 1
+                current_aligned1 = "-"
+                gaps2 += 1
+
+            top = current_aligned1 + top
+            bottom = current_aligned2 + bottom
+            matches = match_identifier + matches
+            gap = max(gaps, gaps2)
+
+        final_length = len(top)
+        percent_identity = (match_counter/final_length) * 100
+
+        return f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
+
+
 class AlignSW:
     """
-    Runs Smith-Waterman algo
+    Runs Smith-Waterman algo.
     Requires blosum62 for proteins
     """
 
-    def __init__(self, molecule, blosum_matrix, match=1, mismatch=-1, gap=-2):
+    def __init__(self, molecule, blosum_matrix, match=1, mismatch=-1, gap=-1):
         self.match = match
         self.mismatch = mismatch
         self.gap = gap
@@ -169,6 +173,54 @@ class AlignSW:
         self.diagonal = 1
         self.left = 2
         self.up = 3
+
+
+    def _initialize_matrices(self, seq1, seq2):
+        # Returns scoring matrix based on inputs
+        m, n = len(seq1), len(seq2)
+        scoring_matrix = np.zeros((m+1, n+1), dtype=int)
+        path_matrix = np.zeros((m+1, n+1), dtype=int)
+
+        return scoring_matrix, path_matrix
+
+
+    def run_smith_algo(self, seq1, seq2):
+        # Assign scores at each position in the matrix for possible movements
+        scoring_matrix, path_matrix = self._initialize_matrices(seq1, seq2)
+        m, n = len(seq1), len(seq2)
+        max_score = -1
+        max_index = (-1, -1)
+
+        for i in range(1, m+1):
+            for j in range(1, n+1):
+                if self.is_nucleotide:
+                    diagonal_score = scoring_matrix[i-1, j-1] + (self.match if seq1[i-1] == seq2[j-1] else self.mismatch)
+                else:
+                    diagonal_score = scoring_matrix[i-1, j-1] + self.blosum[seq1[i-1]][seq2[j-1]]
+                vert_score = scoring_matrix[i-1, j] + self.gap
+                horizontal_score = scoring_matrix[i, j-1] + self.gap
+                score = max(0, diagonal_score, horizontal_score, vert_score)
+                scoring_matrix[i, j] = score
+
+                # Populate path matrix for backtracking based on travel score
+                if score == 0:
+                    path_matrix[i, j] = self.stop
+                elif score == diagonal_score:
+                    path_matrix[i, j] = self.diagonal
+                elif score == vert_score:
+                    path_matrix[i, j] = self.up
+                elif score == horizontal_score:
+                    path_matrix[i, j] = self.left
+
+                # Keep track of max score and position
+                if scoring_matrix[i, j] >= max_score:
+                    max_score = scoring_matrix[i, j]
+                    max_index = (i, j)
+
+        self.path_matrix = path_matrix
+        self.scoring_matrix = scoring_matrix
+
+        return path_matrix, max_score, max_index
 
 
     def get_alignment(self, seq1, seq2):
@@ -181,85 +233,44 @@ class AlignSW:
         gaps = 0
         gaps2 = 0
         (maxi, maxj) = max_index
-
+        current_aligned1 = ""
+        current_aligned2 = ""
 
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while path_matrix[maxi, maxj] != self.stop:
             path = path_matrix[maxi, maxj]
-            letter1 = seq1[maxi]
-            letter2 = seq2[maxj]
             match_identifier = " "
 
             if path == self.diagonal:
-                letter1 = seq1[maxi - 1]
-                letter2 = seq2[maxj - 1]
+                current_aligned1 = seq1[maxi - 1]
+                current_aligned2 = seq2[maxj - 1]
                 maxi -= 1
                 maxj -= 1
                 match_identifier = "|"
                 match_counter += 1
             elif path == self.left:
-                letter1 = "-"
+                current_aligned1 = "-"
                 gaps += 1
                 maxj -= 1
             elif path == self.up:
-                letter2 = "-"
+                current_aligned2 = "-"
                 gaps2 += 1
                 maxj -= 1
 
             # Build sequence in proper order
-            top = letter1 + top
-            bottom = letter2 + bottom
+            top = current_aligned1 + top
+            bottom = current_aligned2 + bottom
             matches = match_identifier + matches
-            
+
+        seq1_start = seq1.index(top[0])
+        seq1_end = seq1.index(top[-1])
+        seq2_start = seq2.index(top[0])
+        seq2_end = seq2.index(top[-1])
+        leading_seq1 = seq1[:seq1_start]
+        trailing_seq1 = seq1[seq1_end:]
+        leading_seq2 = seq2[:seq2_start]
+        trailing_seq2 = seq2[seq2_end:]
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
 
         return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}%"
-
-
-    def _initialize_matrices(self, seq1, seq2):
-        # Returns scoring matrix based on inputs
-        m, n = len(seq1), len(seq2)
-        scoring_matrix = np.zeros((m+1, n+1))
-        path_matrix = np.zeros((m+1, n+1))
-
-        return scoring_matrix, path_matrix
-
-
-    def run_smith_algo(self, seq1, seq2):
-        # Assign scores at each position in the matrix for possible movements
-        scoring_matrix, path_matrix = self._initialize_matrices(seq1, seq2)
-        m, n = len(seq1), len(seq2)
-        max_score = 0
-        max_index = (0, 0)
-
-        for i in range(1, m+1):
-            for j in range(1, n+1):
-                if self.is_nucleotide:
-                    diagonal_score = scoring_matrix[i-1, j-1] + (self.match if seq1[i-1] == seq2[j-1] else self.mismatch)
-                else:
-                    diagonal_score = scoring_matrix[i-1, j-1] + self.blosum[seq1[i-1]][seq2[j-1]]
-                vert_score = scoring_matrix[i-1, j] + self.gap
-                horizontal_score = scoring_matrix[i, j-1] + self.gap
-                score = max(diagonal_score, horizontal_score, vert_score)
-                scoring_matrix[i, j] = score
-
-                # Populate path matrix for backtracking based on travel score
-                if score == 0:
-                    path_matrix[i, j] = self.stop
-                elif score == diagonal_score:
-                    path_matrix[i, j] = self.diagonal
-                elif score == vert_score:
-                    path_matrix[i, j] = self.up
-                else:
-                    path_matrix[i, j] = self.left
-
-                # Keep track of max score and position
-                if scoring_matrix[i, j] > max_score:
-                    max_score = scoring_matrix[i, j]
-                    max_index = (i, j)
-
-        self.path_matrix = path_matrix
-        self.scoring_matrix = scoring_matrix
-
-        return path_matrix, max_score, max_index

@@ -5,14 +5,14 @@ Michael Tyler 8/22/25
 import numpy as np
 from abc import ABC, abstractmethod
 
-def get_blosum_matrix(blosum_file):
+def get_aa_matrix(matrix_file):
     """
     Returns a scoring matrix from .txt file
 
-    :param blosum_filepath: path to blosum62 matrix (for protein alignment)
+    :param aa_filepath: path to blosum62 or pam160 matrix (for protein alignment)
     :return: nested dictionary scoring matrix
     """
-    with open(blosum_file) as b:
+    with open(matrix_file) as b:
         header = b.readline().upper().strip().replace('  ', ' ')
         species = header.split(' ')
         final_matrix = {}
@@ -53,11 +53,11 @@ class AlignerBaseClass(ABC):
     left = 2
     up = 3
 
-    def __init__(self, molecule, blosum_matrix, match=1, mismatch=-1, gap=-1):
+    def __init__(self, molecule, aa_matrix, match=1, mismatch=-1, gap=-1):
         self.match = match
         self.mismatch = mismatch
         self.gap = gap
-        self.blosum = blosum_matrix
+        self.aa = aa_matrix
         self.is_nucleotide = molecule.lower() == "dna"
 
 
@@ -86,11 +86,11 @@ class AlignerBaseClass(ABC):
 class AlignNW(AlignerBaseClass):
     """
     Runs Needleman-Wunsch algo
-    Requires blosum62 for proteins
+    Requires blosum62 or pam160 for proteins
     """
 
-    def __init__(self, molecule, blosum_matrix):
-        super().__init__(molecule, blosum_matrix)
+    def __init__(self, molecule, aa_matrix):
+        super().__init__(molecule, aa_matrix)
 
 
     def _initialize_matrices(self, seq1, seq2):
@@ -118,7 +118,7 @@ class AlignNW(AlignerBaseClass):
                 if self.is_nucleotide:
                     diagonal_score = scoring_matrix[i - 1, j - 1] + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch)
                 else:
-                    diagonal_score = scoring_matrix[i - 1, j - 1] + self.blosum[seq1[i - 1]][seq2[j - 1]]
+                    diagonal_score = scoring_matrix[i - 1, j - 1] + self.aa[seq1[i - 1]][seq2[j - 1]]
                 vert_score = scoring_matrix[i - 1, j] + self.gap
                 horizontal_score = scoring_matrix[i, j - 1] + self.gap
                 score = max(diagonal_score, horizontal_score, vert_score)
@@ -179,11 +179,11 @@ class AlignNW(AlignerBaseClass):
 class AlignSW(AlignerBaseClass):
     """
     Runs Smith-Waterman algo.
-    Requires blosum62 for proteins
+    Requires blosum62 or pam160 for proteins
     """
 
-    def __init__(self, molecule, blosum_matrix):
-        super().__init__(molecule, blosum_matrix)
+    def __init__(self, molecule, aa_matrix):
+        super().__init__(molecule, aa_matrix)
 
 
     def _initialize_matrices(self, seq1, seq2):
@@ -201,7 +201,7 @@ class AlignSW(AlignerBaseClass):
                 if self.is_nucleotide:
                     diagonal_score = scoring_matrix[i - 1, j - 1] + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch)
                 else:
-                    diagonal_score = scoring_matrix[i - 1, j - 1] + self.blosum[seq1[i - 1]][seq2[j - 1]]
+                    diagonal_score = scoring_matrix[i - 1, j - 1] + self.aa[seq1[i - 1]][seq2[j - 1]]
                 vert_score = scoring_matrix[i - 1, j] + self.gap
                 horizontal_score = scoring_matrix[i, j - 1] + self.gap
                 score = max(0, diagonal_score, horizontal_score, vert_score)

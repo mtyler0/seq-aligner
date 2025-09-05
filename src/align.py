@@ -19,12 +19,13 @@ def index():
 def main():
     sequence1_name, sequence1 = get_fasta_seq("data\\seq1.fasta") # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
     sequence2_name, sequence2 = get_fasta_seq("data\\seq2.fasta") # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
-    blosum62 = get_blosum_matrix("resources\\blosum62.txt")
+    blosum62 = get_aa_matrix("resources\\blosum62.txt")
     a = AlignNW("dna", blosum_matrix=blosum62)
     b = AlignSW("dna", blosum_matrix=blosum62)
 
     #print(a.get_alignment(sequence1, sequence2))
-    print(b.get_alignment(sequence1, sequence2))
+    #print(b.get_alignment(sequence1, sequence2))
+    print()
 
     #return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
     #return sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)

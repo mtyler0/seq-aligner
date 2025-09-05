@@ -73,6 +73,15 @@ class AlignerBaseClass(ABC):
     def get_alignment(self, seq1, seq2):
         pass
 
+    def _create_matrix(self, seq1, seq2):
+        m, n = len(seq1), len(seq2)
+        scoring_matrix = np.zeros((m + 1, n + 1), dtype=int)
+        path_matrix = np.zeros((m + 1, n + 1), dtype=int)
+
+        return scoring_matrix, path_matrix, m, n
+
+    def _traceback_vars(self, seq1, seq2):
+        return "", "", "", 0, 0, 0
 
 class AlignNW(AlignerBaseClass):
     """
@@ -86,10 +95,8 @@ class AlignNW(AlignerBaseClass):
 
     def _initialize_matrices(self, seq1, seq2):
         # Returns scoring matrix based on inputs
-        m, n = len(seq1), len(seq2)
-        scoring_matrix = np.zeros((m + 1, n + 1))
-        path_matrix = np.zeros((m + 1, n + 1))
-
+        scoring_matrix, path_matrix, m , n = self._create_matrix(seq1, seq2)
+        
         # Initialize border rows and columns with gap penalties
         for i in range(1, m + 1):
             scoring_matrix[i, 0] = i * self.gap
@@ -132,14 +139,9 @@ class AlignNW(AlignerBaseClass):
         # Returns alignment string and score through backtracking
         scoring_matrix, path_matrix = self.run_algo(seq1, seq2)
         score = scoring_matrix[-1, -1]
-        top = "" # Reference strand w/ gaps
-        matches = "" # Visual confirmation of match
-        bottom = "" # Query strand w/ gaps
+        top, matches, bottom, match_counter, gaps1, gaps2 = self._traceback_vars(seq1, seq2)
         i = len(seq1) - 1
         j = len(seq2) - 1
-        match_counter = 0
-        gaps = 0
-        gaps2 = 0
 
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while (i, j) != (-1, -1):
@@ -157,7 +159,7 @@ class AlignNW(AlignerBaseClass):
             elif path == AlignerBaseClass.up:
                 i -= 1
                 current_aligned2 = "-"
-                gaps += 1
+                gaps1 += 1
             elif path == AlignerBaseClass.left:
                 j -= 1
                 current_aligned1 = "-"
@@ -166,7 +168,7 @@ class AlignNW(AlignerBaseClass):
             top = current_aligned1 + top
             bottom = current_aligned2 + bottom
             matches = match_identifier + matches
-            gap = max(gaps, gaps2)
+            gap = max(gaps1, gaps2)
 
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
@@ -186,17 +188,11 @@ class AlignSW(AlignerBaseClass):
 
     def _initialize_matrices(self, seq1, seq2):
         # Returns scoring matrix based on inputs
-        m, n = len(seq1), len(seq2)
-        scoring_matrix = np.zeros((m + 1, n + 1), dtype=int)
-        path_matrix = np.zeros((m + 1, n + 1), dtype=int)
-
-        return scoring_matrix, path_matrix
-
+        return self._create_matrix(seq1, seq2)
 
     def run_algo(self, seq1, seq2):
         # Assign scores at each position in the matrix for possible movements
-        scoring_matrix, path_matrix = self._initialize_matrices(seq1, seq2)
-        m, n = len(seq1), len(seq2)
+        scoring_matrix, path_matrix, m ,n = self._initialize_matrices(seq1, seq2)
         max_score = -1
         max_index = (-1, -1)
 
@@ -231,13 +227,9 @@ class AlignSW(AlignerBaseClass):
 
     def get_alignment(self, seq1, seq2):
         # Returns alignment string and score through backtracking
+        # Get matrices and initialize variables to empty strings and zeros
         path_matrix, max_score, max_index = self.run_algo(seq1, seq2)
-        top = "" # Reference strand w/ gaps
-        matches = "" # Visual confirmation of match
-        bottom = "" # Query strand w/ gaps
-        match_counter = 0
-        gaps = 0
-        gaps2 = 0
+        top, matches, bottom, match_counter, gaps1, gaps2 = self._traceback_vars(seq1, seq2)
         (maxi, maxj) = max_index
         current_aligned1 = ""
         current_aligned2 = ""
@@ -252,15 +244,16 @@ class AlignSW(AlignerBaseClass):
                 current_aligned2 = seq2[maxj - 1]
                 maxi -= 1
                 maxj -= 1
-                match_identifier = "|"
-                match_counter += 1
+                if current_aligned1 == current_aligned2:
+                    match_identifier = "|"
+                    match_counter += 1
             elif path == AlignerBaseClass.up:
                 current_aligned2 = "-"
                 gaps2 += 1
                 maxi -= 1
             elif path == AlignerBaseClass.left:
                 current_aligned1 = "-"
-                gaps += 1
+                gaps1 += 1
                 maxj -= 1
             
             # Build sequence in proper order

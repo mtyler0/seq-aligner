@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Document</title>
+    <title>Mtyler Sequence Alignment Tool</title>
 </head>
 <body>
     <div class="logo">
@@ -13,23 +13,69 @@
     <div class="content">
         <div class="pageTitle">Sequence Alignment Tool</div>
         <div class="entry">
-            <form action="">
-                <label for="myseq">Enter a query sequence:</label><br><br>
+            <form method="POST" action="/">
+                <label for="myseq">Enter a query sequence:</label><br>
                 <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
-                </textarea><br><br>
+                </textarea><br>
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq1file" name="seq1file">
             </form>
         </div>
         <div class="entry">
-            <form action="">
-                <label for="myseq">Enter a subject sequence:</label><br><br>
+            <form method="POST" action="/">
+                <label for="myseq">Enter a subject sequence:</label><br>
                 <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
-                </textarea><br><br>
+                </textarea><br>
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq2file" name="seq2file">
             </form>
         </div>
+        <div class="parameters">
+            <form method="POST" action="/">
+                <label for="penalties" id="param">Change algorithm parameters</label><br>
+                <label for="match" id="param">Match Score:</label>
+                <select name="match">
+                    <option value="0">4</option>
+                    <option value="0">3</option>
+                    <option value="0">2</option>
+                    <option value="0">1</option>
+                    <option value="0">0</option>
+                    <option value="0">-1</option>
+                    <option value="0">-2</option>
+                    <option value="0">-3</option>
+                    <option value="0">-4</option>
+                </select><br>
+                <label for="mismatch" id="param">Mismatch Penalty:</label>
+                <select name="mismatch">
+                    <option value="0">4</option>
+                    <option value="0">3</option>
+                    <option value="0">2</option>
+                    <option value="0">1</option>
+                    <option value="0">0</option>
+                    <option value="0">-1</option>
+                    <option value="0">-2</option>
+                    <option value="0">-3</option>
+                    <option value="0">-4</option>
+                </select><br>
+                <label for="gap" id="param">Gap Penalty:</label>
+                <select name="gap">
+                    <option value="0">4</option>
+                    <option value="0">3</option>
+                    <option value="0">2</option>
+                    <option value="0">1</option>
+                    <option value="0">0</option>
+                    <option value="0">-1</option>
+                    <option value="0">-2</option>
+                    <option value="0">-3</option>
+                    <option value="0">-4</option>
+                </select>
+            </form>
+        </div>
+        <div><p>
+            Match: {{ m1 }}
+            Mismatch: {{ m2 }}
+            Gap: {{ g }}
+        </p></div>
         <div class="submit"><input type="submit"></div>
         <div id="aligner">
             <label for="aligned">Needleman-Wunsch alignment of {{ nw_seq1 }} and {{ nw_seq2 }}:</label>

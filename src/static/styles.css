@@ -22,7 +22,22 @@ label {
     background-color: rgb(3, 103, 103);
     border: 2px solid black;
     padding: 4px;
+    border-radius: 6px;
+}
 
+label[id="param"]{
+    background-color: #1d2a35;
+    border: none
+}
+
+.parameters select{
+    font-size: 20px;
+    margin: 15px;
+}
+
+.parameters label[for="penalties"]{
+    font-size: 30px;
+    margin: 15px;
 }
 
 label[for="aligned"] {
@@ -35,6 +50,9 @@ input[type="submit"] {
     background-color: rgba(197, 0, 0, 0.749);
     color: aliceblue;
     font-weight: bolder;
+    cursor: pointer;
+    border: 2px solid black;
+    border-radius: 6px;
 }
 
 input[type="file"] {

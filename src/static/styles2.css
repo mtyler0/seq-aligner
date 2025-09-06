@@ -1,0 +1,127 @@
+/* === Global Reset === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+/* === Body === */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* === Logo === */
+.logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.logo img {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* === Content Wrapper === */
+.content {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* === Title === */
+.pageTitle {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2c3e50;
+}
+
+/* === Entry Forms === */
+.entry {
+    margin-bottom: 25px;
+}
+
+.entry label {
+    font-weight: 600;
+    color: #444;
+    display: block;
+    margin-bottom: 8px;
+}
+
+textarea.reset {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    transition: border-color 0.2s ease-in-out;
+}
+
+textarea.reset:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* File Upload */
+input[type="file"] {
+    margin-top: 8px;
+}
+
+/* === Submit Button === */
+.submit {
+    text-align: center;
+    margin: 25px 0;
+}
+
+.submit input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.submit input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* === Alignment Outputs === */
+#aligner, #sw_aligner {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f4f6f9;
+    border-left: 4px solid #007bff;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+#aligner label, #sw_aligner label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 12px;
+    color: #2c3e50;
+}
+
+pre {
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-family: "Consolas", monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

@@ -16,6 +16,10 @@ body {
     background-color: #1d2a35;
 }
 
+.input-label {
+    margin-bottom: 10px;
+}
+
 label {
     font-size: 18px;
     font-weight: bold;
@@ -42,6 +46,10 @@ label[id="param"]{
 
 label[for="aligned"] {
     margin-bottom: 0px;
+}
+
+.myfile {
+    margin-top: 10px;
 }
 
 input[type="submit"] {

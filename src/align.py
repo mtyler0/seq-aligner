@@ -6,7 +6,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET, POST"])
+@app.route("/")#, methods=["GET, POST"])
 def index():
     if request.method == "POST":
         match = request.form["match"]
@@ -23,9 +23,9 @@ def index():
         sw_alignment=sw_alignment,
         sw_seq1=sw_seq1,
         sw_seq2=sw_seq2,
-        m1=match,
-        m2=mismatch,
-        g=gap
+        #m1=match,
+        #m2=mismatch,
+        #g=gap
     )
 
 
@@ -36,12 +36,13 @@ def main():
     a = AlignNW("dna", aa_matrix=None)
     b = AlignSW("dna", aa_matrix=None)
 
-    print(a.get_alignment(sequence1, sequence2))
-    print(b.get_alignment(sequence1, sequence2))
+    #print(a.get_alignment(sequence1, sequence2))
+    #print(b.get_alignment(sequence1, sequence2))
+    #print(sequence1_name, sequence1, sequence2_name, sequence2)
 
-    return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
+    #return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
     #return sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
 
 if __name__ == "__main__":
-    #main()
-    app.run(debug=True)
+    main()
+    #app.run(debug=True)

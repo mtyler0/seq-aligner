@@ -28,12 +28,18 @@ def get_fasta_seq(fasta_file):
     """
 
     with open(fasta_file) as fasta:
-        contents = fasta.read().upper()
-        sequence = contents.split("\n")[1].strip("\n")
+        contents = fasta.readlines()
+        seqs = []
+        current_sequence = ""
+        for i, line in enumerate(contents):
+            if line[0] == ">":
+                current_sequence = contents[i + 1].strip()
+                seqs.append(current_sequence)
+
         if "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
             name = fasta_file[name_start:]
         else:
             name = fasta_file
 
-        return name, sequence
+        return name, seqs

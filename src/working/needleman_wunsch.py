@@ -60,7 +60,7 @@ class AlignNW(AlignerBaseClass):
             path = path_matrix[i + 1, j + 1]
             current_aligned1 = seq1[i]
             current_aligned2 = seq2[j]
-            match_identifier = " "
+            match_identifier = "."
 
             if path == AlignerBaseClass.DIAGONAL:
                 i -= 1

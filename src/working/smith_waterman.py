@@ -56,7 +56,7 @@ class AlignSW(AlignerBaseClass):
         # Backtrack starting at bottom right of matrix and build alignment string based on path score until
         while path_matrix[maxi, maxj] != AlignerBaseClass.STOP:
             path = path_matrix[maxi, maxj]
-            match_identifier = " "
+            match_identifier = "."
 
             if path == AlignerBaseClass.DIAGONAL:
                 current_aligned1 = seq1[maxi - 1]
@@ -74,12 +74,13 @@ class AlignSW(AlignerBaseClass):
                 current_aligned1 = "-"
                 gaps1 += 1
                 maxj -= 1
-            
+
             # Build sequence in proper order
             top = current_aligned1 + top
             bottom = current_aligned2 + bottom
             matches = match_identifier + matches
 
+        """
         seq1_start = seq1.index(top[0])
         seq1_end = seq1.index(top[-1])
         seq2_start = seq2.index(top[0])
@@ -88,6 +89,7 @@ class AlignSW(AlignerBaseClass):
         trailing_seq1 = seq1[seq1_end:]
         leading_seq2 = seq2[:seq2_start]
         trailing_seq2 = seq2[seq2_end:]
+        """
         final_length = len(top)
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)

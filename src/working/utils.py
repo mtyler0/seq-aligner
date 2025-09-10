@@ -31,6 +31,7 @@ def get_fasta_seq(fasta_file):
         contents = fasta.readlines()
         seqs = []
         current_sequence = ""
+        is_multiseq = False
         for i, line in enumerate(contents):
             if line[0] == ">":
                 current_sequence = contents[i + 1].strip()
@@ -42,4 +43,10 @@ def get_fasta_seq(fasta_file):
         else:
             name = fasta_file
 
-        return name, seqs
+        if len(seqs) == 1:
+            return name, seqs[0], is_multiseq
+        elif len(seqs) == 0:
+            return "Empty File"
+        else:
+            is_multiseq = True
+            return name, seqs, is_multiseq

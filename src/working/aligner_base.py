@@ -26,13 +26,14 @@ class AlignerBaseClass(ABC):
         pass
 
     @abstractmethod
-    def run_algo(self, seq1, seq2):
+    def populate_matrices(self, seq1, seq2):
         pass
 
     @abstractmethod
     def get_alignment(self, seq1, seq2):
         pass
 
+    # Initializes matrices with zeros of size m by n
     def _create_matrix(self, seq1, seq2):
         m, n = len(seq1), len(seq2)
         scoring_matrix = np.zeros((m + 1, n + 1), dtype=int)
@@ -40,9 +41,11 @@ class AlignerBaseClass(ABC):
 
         return scoring_matrix, path_matrix, m, n
 
+    # For variable casting in traceback
     def _traceback_vars(self):
         return "", "", "", 0, 0, 0
 
+    # Cell scoring logic for matrix population
     def _score_cell(self, scoring_matrix, seq1, seq2, i, j):
         if self.is_nucleotide:
             diagonal_score = scoring_matrix[i - 1, j - 1] + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch)

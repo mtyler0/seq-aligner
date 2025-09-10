@@ -14,7 +14,7 @@ class AlignSW(AlignerBaseClass):
         # Returns scoring matrix based on inputs
         return self._create_matrix(seq1, seq2)
 
-    def run_algo(self, seq1, seq2):
+    def populate_matrices(self, seq1, seq2):
         # Assign scores at each position in the matrix for possible movements
         scoring_matrix, path_matrix, m ,n = self._initialize_matrices(seq1, seq2)
         max_score = -1
@@ -47,7 +47,7 @@ class AlignSW(AlignerBaseClass):
     def get_alignment(self, seq1, seq2):
         # Returns alignment string and score through backtracking
         # Get matrices and initialize variables to empty strings and zeros
-        path_matrix, max_score, max_index = self.run_algo(seq1, seq2)
+        path_matrix, max_score, max_index = self.populate_matrices(seq1, seq2)
         top, matches, bottom, match_counter, gaps1, gaps2 = self._traceback_vars()
         (maxi, maxj) = max_index
         current_aligned1 = ""

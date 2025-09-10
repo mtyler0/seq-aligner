@@ -25,7 +25,7 @@ class AlignNW(AlignerBaseClass):
         return scoring_matrix, path_matrix
 
 
-    def run_algo(self, seq1, seq2):
+    def populate_matrices(self, seq1, seq2):
         # Assign scores at each position in the matrix for possible movements
         scoring_matrix, path_matrix = self._initialize_matrices(seq1, seq2)
         m, n = len(seq1), len(seq2)
@@ -49,7 +49,7 @@ class AlignNW(AlignerBaseClass):
 
     def get_alignment(self, seq1, seq2):
         # Returns alignment string and score through backtracking
-        scoring_matrix, path_matrix = self.run_algo(seq1, seq2)
+        scoring_matrix, path_matrix = self.populate_matrices(seq1, seq2)
         score = scoring_matrix[-1, -1]
         top, matches, bottom, match_counter, gaps1, gaps2 = self._traceback_vars()
         i = len(seq1) - 1

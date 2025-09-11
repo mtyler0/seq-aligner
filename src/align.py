@@ -36,13 +36,13 @@ def main():
     a = AlignNW("dna", aa_matrix=None)
     b = AlignSW("dna", aa_matrix=None)
 
-    #print(a.get_alignment(sequence1, sequence2))
-    #print(b.get_alignment(sequence1, sequence2))
+    print(a.get_alignment(sequence1, sequence2))
+    print(b.get_alignment(sequence1, sequence2))
     #print(sequence1_name, sequence1, sequence2_name, sequence2)
 
     return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
     #return sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
 
 if __name__ == "__main__":
-    #main()
-    app.run(debug=True)
+    main()
+    #app.run(debug=True)

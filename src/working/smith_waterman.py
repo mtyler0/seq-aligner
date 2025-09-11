@@ -94,4 +94,14 @@ class AlignSW(AlignerBaseClass):
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 
-        return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}% ({match_counter}/{final_length})\nGaps: {gap}"
+        aligned_seq = {
+                "aligned_seq1": top,
+                "match_identifiers": matches,
+                "aligned_seq2": bottom,
+                "percent_id": percent_identity,
+                "gap_count": gap
+                       }
+
+        # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs
+        # f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
+        return aligned_seq

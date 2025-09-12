@@ -6,8 +6,8 @@ class AlignSW(AlignerBaseClass):
     Requires blosum62 or pam160 for proteins
     """
 
-    def __init__(self, molecule, aa_matrix):
-        super().__init__(molecule, aa_matrix)
+    def __init__(self, molecule, aa_matrix, match=1, mismatch=-1, gap=-1):
+        super().__init__(molecule, aa_matrix, match=match, mismatch=mismatch, gap=gap)
 
 
     def _initialize_matrices(self, seq1, seq2):
@@ -94,14 +94,11 @@ class AlignSW(AlignerBaseClass):
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 
-        aligned_seq = {
-                "aligned_seq1": top,
-                "match_identifiers": matches,
-                "aligned_seq2": bottom,
-                "percent_id": percent_identity,
-                "gap_count": gap
-                       }
+        keys = ["aligned_seq1", "match_identifiers", "aligned_seq2", "percent_id", "gap_count"]
+        vals = [top, matches, bottom, percent_identity, gap]
+
+        aligned_seq = dict(zip(keys, vals))
 
         # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs
         # f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
-        return aligned_seq
+        return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"#aligned_seq

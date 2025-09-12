@@ -37,9 +37,11 @@ def get_fasta_seq(fasta_file):
                 current_sequence = contents[i + 1].strip()
                 seqs.append(current_sequence)
 
+        # Fix!!! Disallow files with >2 seqs?
         if "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
-            name = fasta_file[name_start:]
+            name_end = fasta_file.index(".")
+            name = fasta_file[name_start:name_end]
         else:
             name = fasta_file
 

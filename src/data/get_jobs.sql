@@ -1,0 +1,4 @@
+--CREATE TABLE jobs(id PRIMARY KEY, time_submitted DATETIME DEFAULT CURRENT_TIMESTAMP, result TEXT);
+
+
+SELECT * FROM jobs;

@@ -20,15 +20,15 @@
                 </div>
         </div>
         <div class="entry">
-                <div class="input-label">
-                    <label for="myseq">Enter a subject sequence:</label>
-                </div>
-                <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
-                </textarea>
-                <div class="myfile">
-                    <label for="myfile">Upload</label>
-                    <input type="file" id="seq2file" name="seq2file">
-                </div>
+            <div class="input-label">
+                <label for="myseq">Enter a subject sequence:</label>
+            </div>
+            <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value="">Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters.
+            </textarea>
+            <div class="myfile">
+                <label for="myfile">Upload</label>
+                <input type="file" id="seq2file" name="seq2file">
+            </div>
         </div>
         <div class="parameters">
                 <div>
@@ -37,23 +37,24 @@
                 <label for="match" id="param">Match Score:</label>
                 <select name="match">
                     {% for item in [-4, -3, -2, -1, 0, 1, 2, 3, 4] %}
-                    <option value="{{ item }}">{{ item }}</option>
+                    <option value="{{item}}">{{item}}</option>
                     {% endfor %}
                 </select><br>
                 <label for="mismatch" id="param">Mismatch Penalty:</label>
                 <select name="mismatch">
                     {% for item in [-4, -3, -2, -1, 0, 1, 2, 3, 4] %}
-                    <option value="{{ item }}">{{ item }}</option>
+                    <option value="{{item}}">{{item}}</option>
                     {% endfor %}
                 </select><br>
                 <label for="gap" id="param">Gap Penalty:</label>
                 <select name="gap">
                     {% for item in [-4, -3, -2, -1, 0, 1, 2, 3, 4] %}
-                    <option value="{{ item }}">{{ item }}</option>
+                    <option value="{{item}}">{{item}}</option>
                     {% endfor %}
                 </select>
                 <div class="submit">
-                    <button type="submit">Submit</button>
+                    <button type="submit">Submit</button><br>
+                    <a href="/jobs">Jobs</a>
                 </div>
             </form>
         </div>

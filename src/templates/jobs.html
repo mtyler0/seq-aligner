@@ -5,7 +5,30 @@
     <div class="pageTitle">Jobs</div>
     <div class="job-list">
         <label for="jobs">Results:</label>
-        <p>{{results}}</p>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Time</th>
+            <th>NW Seq1</th>
+            <th>NW Seq2</th>
+            <th>NW Result</th>
+            <th>SW Seq1</th>
+            <th>SW Seq2</th>
+            <th>SW Result</th>
+        </tr>
+        {% for row in results %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>{{ row[6] }}</td>
+            <td><pre>{{ row[7] }}</pre></td>
+        </tr>
+        {% endfor %}
+    </table>
     </div>
 </div>
 {% endblock %}

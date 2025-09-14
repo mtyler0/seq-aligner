@@ -1,4 +1,4 @@
-import align
+import app
 
-align.index()
-align.app.run(debug=True)
+app.index()
+app.app.run(debug=True)

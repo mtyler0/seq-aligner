@@ -39,7 +39,20 @@ def submit():
         db = get_db()
         cursor = db.cursor() # type: ignore
         try:
-            cursor.execute("INSERT INTO jobs (nw_seq1_name, nw_seq2_name, nw_result, sw_seq1_name, sw_seq2_name, sw_result) VALUES (?, ?, ?, ?, ?, ?)", params)
+            cursor.execute(
+                """
+                INSERT INTO jobs (
+                nw_seq1_name, 
+                nw_seq2_name, 
+                nw_result, 
+                sw_seq1_name, 
+                sw_seq2_name, 
+                sw_result
+                ) 
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, params
+                )
+            cursor.execute("INSERT INTO jobs (match_score, mismatch, gap) VALUES (?, ?, ?)", (match, mismatch, gap))
             db.commit() # type: ignore
             job_id = cursor.lastrowid
             print(job_id)
@@ -62,8 +75,10 @@ def submit():
 def get_jobs():
     db = get_db()
     cursor = db.cursor() # type: ignore
+    cursor.execute("SELECT rowid, * FROM jobs ORDER BY current_time DESC")
     results = cursor.fetchall()
     return render_template("jobs.html",results=results)
+
 
 def main(match, mismatch, gap):
     sequence1_name, sequence1, is_multiseq = get_fasta_seq("data\\examples\\seq1.fasta") # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta

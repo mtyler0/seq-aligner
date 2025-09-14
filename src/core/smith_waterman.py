@@ -91,6 +91,8 @@ class AlignSW(AlignerBaseClass):
         trailing_seq2 = seq2[seq2_end:]
         """
         final_length = len(top)
+        if final_length < 1:
+            return "No alignment possible within the given parameters"
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 

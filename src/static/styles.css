@@ -2,7 +2,11 @@ html {
     font-family: Arial, Helvetica, sans-serif;
     color:rgb(221, 221, 221);
     text-align: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
+
 
 .pageTitle {
     text-align: center;
@@ -13,6 +17,15 @@ html {
 
 body {
     background-color: #1d2a35;
+    /* background-image: url(images/dna_strand_bg.png); */
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    background-blend-mode: overlay;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .input-label {
@@ -91,4 +104,46 @@ textarea {
 
 .entry {
     margin-bottom: 50px;
+}
+
+.links {
+    margin-top: 25px;
+    background-color: #252525;
+    text-decoration: none;
+}
+
+.links a{
+    margin-right: 15px;
+}
+
+a:link {
+    color:rgb(58, 202, 185);
+    background-color: transparent;
+    text-decoration: none;
+}
+a:visited {
+    color: rgb(67, 242, 227);
+    background-color: transparent;
+    text-decoration: none;
+}
+a:hover {
+  color: rgb(252, 247, 106);
+  background-color: transparent;
+  text-decoration: none;
+}
+a:active {
+  color: rgb(17, 143, 0);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a[class="prev_jobs"] {
+    color:rgba(255, 255, 255, 0.749);
+    text-decoration: underline
+}
+a[class="prev_jobs"]:visited {
+    text-decoration: none
+}
+a[class="prev_jobs"]:hover {
+    text-decoration: underline
 }

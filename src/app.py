@@ -34,6 +34,10 @@ def submit():
         match = request.form.get("match", type=int)
         mismatch = request.form.get("mismatch", type=int)
         gap = request.form.get("gap", type=int)
+        seq1_file = request.form.get("seq1file")
+        seq2_file = request.form.get("seq2file")
+        print(seq1_file, seq2_file)
+
         nw_seq1, nw_seq2, nw_alignment, sw_seq1, sw_seq2, sw_alignment = params = main(match, mismatch, gap)
 
         db = get_db()
@@ -55,7 +59,6 @@ def submit():
             cursor.execute("INSERT INTO jobs (match_score, mismatch, gap) VALUES (?, ?, ?)", (match, mismatch, gap))
             db.commit() # type: ignore
             job_id = cursor.lastrowid
-            print(job_id)
 
         except Exception as e:
             db.rollback() # type: ignore

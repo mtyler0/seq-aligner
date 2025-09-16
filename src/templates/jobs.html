@@ -4,11 +4,13 @@
 <div class="content">
     <div class="pageTitle">Jobs</div>
     <div class="job-list">
-        <label for="jobs">Results:</label>
     <table>
         <tr>
             <th>ID</th>
             <th>Time</th>
+            <th>Match</th>
+            <th>Mismatch</th>
+            <th>Gap</th>
             <th>NW Seq1</th>
             <th>NW Seq2</th>
             <th>NW Result</th>
@@ -26,6 +28,9 @@
             <td>{{ row[5] }}</td>
             <td>{{ row[6] }}</td>
             <td><pre>{{ row[7] }}</pre></td>
+            <td>{{ row[8] }}</td>
+            <td>{{ row[9] }}</td>
+            <td><pre>{{ row[10] }}</pre></td>
         </tr>
         {% endfor %}
     </table>

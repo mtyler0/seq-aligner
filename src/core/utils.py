@@ -29,14 +29,11 @@ def get_fasta_seq(fasta_file):
 
     with open(fasta_file) as fasta:
         contents = fasta.readlines()
-        seqs = []
         current_sequence = ""
         is_multiseq = False
         for i, line in enumerate(contents):
             if line[0] == ">":
                 current_sequence = contents[i + 1].strip()
-                seqs.append(current_sequence)
-
         # Fix!!! Disallow files with >2 seqs?
         if "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
@@ -45,10 +42,4 @@ def get_fasta_seq(fasta_file):
         else:
             name = fasta_file
 
-        if len(seqs) == 1:
-            return name, seqs[0], is_multiseq
-        elif len(seqs) == 0:
-            return "Empty File"
-        else:
-            is_multiseq = True
-            return name, seqs, is_multiseq
+        return name, current_sequence, is_multiseq

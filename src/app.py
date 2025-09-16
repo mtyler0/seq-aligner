@@ -3,11 +3,17 @@ from core.needleman_wunsch import *
 from core.smith_waterman import *
 from flask import Flask, render_template, request, redirect, g, flash, url_for
 import sqlite3
+import os
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 app.secret_key = "2nf38-f2n398"
 DATABASE = "data\\saved_jobs.db"
+UPLOAD_FOLDER = "data\\uploaded_files"
+ALLOWED_EXTENSIONS = {"fasta", "txt", "docx"}
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 
 def get_db():
     db = getattr(g, "_database", None)
@@ -15,6 +21,21 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row
         return db
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def save_file(file):
+    if not file.filename:
+        flash("No selected file")
+        return redirect("/")
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(path)
+        return path
 
 
 @app.teardown_appcontext
@@ -31,14 +52,19 @@ def index():
 
 @app.route("/submit_form", methods=["POST"])
 def post_form():
+    print("!!!!!!!!!", request.files)
+    if not request.files:
+        flash("No file part")
+        return redirect("/")
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
     gap = request.form.get("gap", type=int)
-    seq1_file = request.files.get("seq1file")
-    seq2_file = request.files.get("seq2file")
-    print(seq1_file, seq2_file)
+    seq1_file = request.files["seq1file"]
+    seq2_file = request.files["seq2file"]
+    seq1_path = save_file(seq1_file)
+    seq2_path = save_file(seq2_file)
 
-    params = main(match, mismatch, gap)#, seq1_file, seq2_file)
+    params = main(match, mismatch, gap, seq1_path, seq2_path)
 
     db = get_db()
     cursor = db.cursor() # type: ignore
@@ -61,7 +87,7 @@ def post_form():
             )
         db.commit() # type: ignore
         job_id = cursor.lastrowid
-        flash("Submitting alignment job...")
+        # flash("Submitting alignment job...")
         return redirect(url_for("submit", job_id=job_id))
 
     except Exception as e:
@@ -101,9 +127,9 @@ def get_jobs():
     return render_template("jobs.html",results=results)
 
 
-def main(match, mismatch, gap):#, sequence1_name, sequence2_name):
-    sequence1_name, sequence1, is_multiseq = get_fasta_seq("data\\examples\\seq1.fasta") # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
-    sequence2_name, sequence2, is_multiseq = get_fasta_seq("data\\examples\\seq2.fasta") # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
+def main(match, mismatch, gap, sequence1_path, sequence2_path):
+    sequence1_name, sequence1, is_multiseq = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
+    sequence2_name, sequence2, is_multiseq = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
     blosum62 = get_aa_matrix("resources\\blosum62.txt")
     a = AlignNW("dna", aa_matrix=None, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW("dna", aa_matrix=None, match=match, mismatch=mismatch, gap=gap)

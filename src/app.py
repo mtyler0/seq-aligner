@@ -53,10 +53,17 @@ def index():
 # Send data to algorithm, store in db, then redirect to display page
 @app.route("/submit_form", methods=["POST"])
 def post_form():
-    print("!!!!!!!!!", request.files)
-    if not request.files:
-        flash("No file part")
+    text_input = request.form["SUBJECT"] and request.form["QUERY"]
+    input = text_input or request.files
+    if not input:
+        flash("No file/text part")
         return redirect("/")
+    elif text_input:
+        seq1_text = request.form["SUBJECT"]
+        seq2_text = request.form["QUERY"]
+        is_text = True
+        
+        
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
     gap = request.form.get("gap", type=int)
@@ -125,15 +132,14 @@ def submit():
 def get_jobs():
     db = get_db()
     cursor = db.cursor() # type: ignore
-    cursor.execute("SELECT rowid, * FROM jobs ORDER BY current_time DESC")
+    cursor.execute("SELECT rowid, * FROM jobs WHERE match_score IS NOT NULL ORDER BY rowid DESC")
     results = cursor.fetchall()
     job_id = cursor.lastrowid
     return render_template("jobs.html",results=results, job_id=job_id)
 
 
-@app.route("/jobs/<int:id>")
-def get_job_by_id(id:int):
-    job_id = request.args.get("job_id")
+@app.route("/jobs/<int:job_id>")
+def get_job_by_id(job_id):
     db = get_db()
     cursor = db.cursor() # type: ignore
     cursor.execute("SELECT * FROM jobs WHERE rowid = ?", (job_id,))
@@ -143,8 +149,15 @@ def get_job_by_id(id:int):
         flash("Job not found.", "error")
         return redirect(url_for("index"))
 
-    return redirect("/jobs/<int:id>")
-    
+    return render_template("submit_form.html", 
+        nw_alignment=job["nw_result"],
+        nw_seq1=job["nw_seq1_name"],
+        nw_seq2=job["nw_seq2_name"],
+        sw_alignment=job["sw_result"],
+        sw_seq1=job["sw_seq1_name"],
+        sw_seq2=job["sw_seq2_name"])
+
+
 
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path):

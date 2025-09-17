@@ -3,6 +3,7 @@
 {% block body %}
 <div class="content">
     <div class="pageTitle">Jobs</div>
+    <div class="options"><a href="/">Home</a></div>
     <div class="job-list">
     <table>
         <tr>
@@ -12,16 +13,14 @@
             <th>Mismatch</th>
             <th>Gap</th>
         </tr>
-        {% for row in results %}
-        <tr>
-            <td><a href="/jobs/{{job_id}}">{{ row[0] }}</td></a>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-            <td>{{ row[3] }}</td>
-            <td>{{ row[4] }}</td>
-            <!-- <td><pre>{{ row[7] }}</pre></td> -->
-            <!-- <td><pre>{{ row[10] }}</pre></td> -->
-        </tr>
+        {% for job in results %}
+            <tr>
+                <td><a href="{{ url_for('get_job_by_id', job_id=job['rowid']) }}">{{ job["rowid"] }}</td></a>
+                <td>{{ job[1] }}</td>
+                <td>{{ job[2] }}</td>
+                <td>{{ job[3] }}</td>
+                <td>{{ job[4] }}</td>
+            </tr>
         {% endfor %}
     </table>
     </div>

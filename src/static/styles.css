@@ -106,6 +106,14 @@ textarea {
     margin-bottom: 50px;
 }
 
+.job-list {
+    text-align: left;
+}
+.job-list td{
+    text-align: left;
+    padding:5px;
+}
+
 .links {
     margin-top: 25px;
     background-color: #252525;

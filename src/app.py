@@ -50,6 +50,7 @@ def index():
     return render_template("index.html")
 
 
+# Send data to algorithm, store in db, then redirect to display page
 @app.route("/submit_form", methods=["POST"])
 def post_form():
     print("!!!!!!!!!", request.files)
@@ -96,6 +97,7 @@ def post_form():
         return redirect(url_for("index"))
 
 
+# Get alignment data for the job ID
 @app.route("/submit")
 def submit():
     job_id = request.args.get("job_id")
@@ -118,15 +120,33 @@ def submit():
         sw_seq2=job["sw_seq2_name"])
 
 
+# Retrieve all past data
 @app.route("/jobs")
 def get_jobs():
     db = get_db()
     cursor = db.cursor() # type: ignore
     cursor.execute("SELECT rowid, * FROM jobs ORDER BY current_time DESC")
     results = cursor.fetchall()
-    return render_template("jobs.html",results=results)
+    job_id = cursor.lastrowid
+    return render_template("jobs.html",results=results, job_id=job_id)
 
 
+@app.route("/jobs/<int:id>")
+def get_job_by_id(id:int):
+    job_id = request.args.get("job_id")
+    db = get_db()
+    cursor = db.cursor() # type: ignore
+    cursor.execute("SELECT * FROM jobs WHERE rowid = ?", (job_id,))
+    job = cursor.fetchone()
+
+    if job is None:
+        flash("Job not found.", "error")
+        return redirect(url_for("index"))
+
+    return redirect("/jobs/<int:id>")
+    
+
+# Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path):
     sequence1_name, sequence1, is_multiseq = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
     sequence2_name, sequence2, is_multiseq = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta

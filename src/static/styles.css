@@ -17,7 +17,7 @@ html {
 
 body {
     background-color: #1d2a35;
-    /* background-image: url(images/dna_strand_bg.png); */
+    background-image: url(images/dna_strand_bg.png);
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
@@ -42,7 +42,7 @@ label {
 }
 
 label[id="param"]{
-    background-color: #1d2a35;
+    background: none;
     border: none;
 }
 

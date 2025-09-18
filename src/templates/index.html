@@ -61,6 +61,11 @@
                 {% for item in [-1, 0, 1, 2, 3, 4] %}
                 <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
+            </select><br>
+            <label for="type" id="param">Molecule Type:</label>
+            <select name="type">
+                <option value="DNA" selected>DNA</option>
+                <option value="Protein">Protein</option>
             </select>
             <div class="submit">
                 <button type="submit">Submit</button><br>

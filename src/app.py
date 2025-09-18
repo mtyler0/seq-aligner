@@ -55,24 +55,24 @@ def index():
 def post_form():
     text_input = request.form["SUBJECT"] and request.form["QUERY"]
     input = text_input or request.files
+    match = request.form.get("match", type=int)
+    mismatch = request.form.get("mismatch", type=int)
+    gap = request.form.get("gap", type=int)
+    molecule = request.form.get("type")
+    
     if not input:
         flash("No file/text part")
         return redirect("/")
     elif text_input:
         seq1_text = request.form["SUBJECT"]
         seq2_text = request.form["QUERY"]
-        is_text = True
-        
-        
-    match = request.form.get("match", type=int)
-    mismatch = request.form.get("mismatch", type=int)
-    gap = request.form.get("gap", type=int)
-    seq1_file = request.files["seq1file"]
-    seq2_file = request.files["seq2file"]
-    seq1_path = save_file(seq1_file)
-    seq2_path = save_file(seq2_file)
-
-    params = main(match, mismatch, gap, seq1_path, seq2_path)
+        params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
+    else:
+        seq1_file = request.files["seq1file"]
+        seq2_file = request.files["seq2file"]
+        seq1_path = save_file(seq1_file)
+        seq2_path = save_file(seq2_file)
+        params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
 
     db = get_db()
     cursor = db.cursor() # type: ignore
@@ -158,14 +158,21 @@ def get_job_by_id(job_id):
         sw_seq2=job["sw_seq2_name"])
 
 
-
 # Run algorithm
-def main(match, mismatch, gap, sequence1_path, sequence2_path):
+def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False):
+    if molecule == "Protein": 
+        matrix = get_aa_matrix("resources\\blosum62.txt")
+    else:
+        matrix = None
+    a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
+    b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
+
+    if is_text:
+        return "Input Sequence 1", "Input Sequence 2", a.get_alignment(sequence1_path, sequence2_path), \
+                "Input Sequence 1", "Input Sequence 2", b.get_alignment(sequence1_path, sequence2_path)    
+
     sequence1_name, sequence1, is_multiseq = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
     sequence2_name, sequence2, is_multiseq = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
-    blosum62 = get_aa_matrix("resources\\blosum62.txt")
-    a = AlignNW("dna", aa_matrix=None, match=match, mismatch=mismatch, gap=gap)
-    b = AlignSW("dna", aa_matrix=None, match=match, mismatch=mismatch, gap=gap)
 
     return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), \
             sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)

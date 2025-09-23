@@ -63,10 +63,41 @@
                 {% endfor %}
             </select><br>
             <label for="type" id="param">Molecule Type:</label>
-            <select name="type">
+            <select name="type" id="paramA">
                 <option value="DNA" selected>DNA</option>
                 <option value="Protein">Protein</option>
-            </select>
+            </select><br>
+
+            <script>
+                const target = document.getElementById("paramA");
+                let proteinSelect = null;
+
+                target.addEventListener("change", function() {
+                    if (this.value === "Protein") {
+                        if (!proteinSelect) {
+                            proteinSelect = document.createElement("select");
+                            proteinSelect.name = "protein-matrix";
+                            proteinSelect.id = "protein-matrix";
+
+                            const options = ["BLOSUM62", "PAM160"];
+                            options.forEach(opt => {
+                                const optionEl = document.createElement("option");
+                                optionEl.value = opt;
+                                optionEl.textContent = opt;
+                                proteinSelect.appendChild(optionEl);
+                            });
+                            
+                            target.after(proteinSelect);
+                        }
+                    } else {
+                        if (proteinSelect) {
+                            proteinSelect.remove();
+                            proteinSelect = null;
+                        }
+                    }
+                });
+            </script>
+
             <div class="submit">
                 <button type="submit">Submit</button><br>
                 {% with messages = get_flashed_messages() %}

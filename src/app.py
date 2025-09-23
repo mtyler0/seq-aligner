@@ -23,7 +23,7 @@ def get_db():
         return db
 
 
-def allowed_file(filename):
+def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
@@ -50,23 +50,30 @@ def index():
     return render_template("index.html")
 
 
-# Send data to algorithm, store in db, then redirect to display page
+# Send data to algorithm, store in db, then redirect to submit page
 @app.route("/submit_form", methods=["POST"])
 def post_form():
-    text_input = request.form["SUBJECT"] and request.form["QUERY"]
-    input = text_input or request.files
+    text_input: str = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
+    input: bool = len(text_input) > 0 or \
+        (request.files.get("seq1file").filename != "" and \
+            request.files.get("seq2file").filename != "")
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
     gap = request.form.get("gap", type=int)
     molecule = request.form.get("type")
+    matrix = request.form.get("protein-matrix")
     
     if not input:
-        flash("No file/text part")
+        flash("Error: No file/text input")
         return redirect("/")
     elif text_input:
         seq1_text = request.form["SUBJECT"]
         seq2_text = request.form["QUERY"]
-        params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
+        try:
+            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
+        except Exception as e:
+            flash(f"ERROR: {e}")
+            return redirect("/")
     else:
         seq1_file = request.files["seq1file"]
         seq2_file = request.files["seq2file"]
@@ -104,11 +111,10 @@ def post_form():
         return redirect(url_for("index"))
 
 
-# Get alignment data for the job ID
+# Get alignment data for the current job ID
 @app.route("/submit")
 def submit():
     job_id = request.args.get("job_id")
-
     db = get_db()
     cursor = db.cursor() # type: ignore
     cursor.execute("SELECT * FROM jobs WHERE rowid = ?", (job_id,))
@@ -138,6 +144,7 @@ def get_jobs():
     return render_template("jobs.html",results=results, job_id=job_id)
 
 
+# Retrieve data for specific job ID from list of jobs
 @app.route("/jobs/<int:job_id>")
 def get_job_by_id(job_id):
     db = get_db()
@@ -160,7 +167,7 @@ def get_job_by_id(job_id):
 
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False):
-    if molecule == "Protein": 
+    if molecule == "Protein":
         matrix = get_aa_matrix("resources\\blosum62.txt")
     else:
         matrix = None

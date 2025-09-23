@@ -20,7 +20,6 @@ class AlignerBaseClass(ABC):
         self.aa = aa_matrix
         self.is_nucleotide = molecule.lower() == "dna"
 
-
     @abstractmethod
     def _initialize_matrices(self, seq1, seq2):
         pass

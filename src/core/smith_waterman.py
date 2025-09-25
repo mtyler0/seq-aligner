@@ -96,11 +96,11 @@ class AlignSW(AlignerBaseClass):
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 
-        keys = ["aligned_seq1", "match_identifiers", "aligned_seq2", "percent_id", "gap_count"]
-        vals = [top, matches, bottom, percent_identity, gap]
+        keys = ["aligned_seq1", "match_identifiers", "aligned_seq2", "score", "percent_id", "gap_count"]
+        vals = [top, matches, bottom, max_score, percent_identity, gap]
 
         aligned_seq = dict(zip(keys, vals))
 
         # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs
         # f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
-        return f"{top}\n{matches}\n{bottom}\n\nScore: {max_score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"#aligned_seq
+        return vals

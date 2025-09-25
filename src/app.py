@@ -95,16 +95,22 @@ def post_form():
             nw_result, 
             sw_seq1_name, 
             sw_seq2_name, 
-            sw_result
+            sw_result,
+            score,
+            percent_id,
+            gaps,
+            score2,
+            percent_id2,
+            gaps2
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (match, mismatch, gap, *params)
             )
         db.commit() # type: ignore
         job_id = cursor.lastrowid
         # flash("Submitting alignment job...")
         return redirect(url_for("submit", job_id=job_id))
-
+    
     except Exception as e:
         db.rollback() # type: ignore
         print("DB insert failed:", e)
@@ -128,7 +134,13 @@ def submit():
         nw_alignment=job["nw_result"],
         nw_seq1=job["nw_seq1_name"],
         nw_seq2=job["nw_seq2_name"],
+        nw_score=job["score"],
+        nw_percent_id=job["percent_id"],
+        nw_gaps=job["gaps"],
         sw_alignment=job["sw_result"],
+        sw_score=job["score2"],
+        sw_percent_id=job["percent_id2"],
+        sw_gaps=job["gaps2"],
         sw_seq1=job["sw_seq1_name"],
         sw_seq2=job["sw_seq2_name"])
 
@@ -160,7 +172,13 @@ def get_job_by_id(job_id):
         nw_alignment=job["nw_result"],
         nw_seq1=job["nw_seq1_name"],
         nw_seq2=job["nw_seq2_name"],
+        nw_score=job["score"],
+        nw_percent_id=job["percent_id"],
+        nw_gaps=job["gaps"],
         sw_alignment=job["sw_result"],
+        sw_score=job["score2"],
+        sw_percent_id=job["percent_id2"],
+        sw_gaps=job["gaps2"],
         sw_seq1=job["sw_seq1_name"],
         sw_seq2=job["sw_seq2_name"])
 
@@ -181,8 +199,20 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
     sequence1_name, sequence1, is_multiseq = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
     sequence2_name, sequence2, is_multiseq = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
 
-    return sequence1_name, sequence2_name, a.get_alignment(sequence1, sequence2), \
-            sequence1_name, sequence2_name, b.get_alignment(sequence1, sequence2)
+    nw = a.get_alignment(sequence1, sequence2)
+    sw = b.get_alignment(sequence1, sequence2)
+    nw_result = f"{nw[0]}\n{nw[1]}\n{nw[2]}"
+    sw_result = f"{sw[0]}\n{sw[1]}\n{sw[2]}"
+    score = nw[3]
+    percent_id = nw[4]
+    gaps = nw[5]
+    score2 = sw[3]
+    percent_id2 = sw[4]
+    gaps2 = sw[5]
+    
+    return sequence1_name, sequence2_name, nw_result, \
+            sequence1_name, sequence2_name, sw_result, \
+                score, percent_id, gaps, score2, percent_id2, gaps2
 
 
 if __name__ == "__main__":

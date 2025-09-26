@@ -7,18 +7,18 @@
         <label for="aligned">Needleman-Wunsch alignment of {{ nw_seq1 }} and {{ nw_seq2 }}:</label>
         <pre>{{ nw_alignment }}</pre>
         <div class="stats">
-            <p>{{ nw_score }}</p>
-            <p>{{ nw_percent_id }}</p>
-            <p>{{ nw_gaps }}</p>
+            <p>Score: {{ nw_score }}</p>
+            <p>Percent Identical: {{ nw_percent_id }}</p>
+            <p>Gaps: {{ nw_gaps }}</p>
         </div>
     </div>
     <div id="sw_aligner">
         <label for="alignedsw">Smith-Waterman alignment of {{ sw_seq1 }} and {{ sw_seq2 }}:</label>
         <pre>{{ sw_alignment }}</pre>
         <div class="stats">
-            <p>{{ sw_score }}</p>
-            <p>{{ sw_percent_id }}</p>
-            <p>{{ sw_gaps }}</p>
+            <p>Score: {{ sw_score }}</p>
+            <p>Percent Identical: {{ sw_percent_id }}</p>
+            <p>Gaps: {{ sw_gaps }}</p>
         </div>
     </div>
     

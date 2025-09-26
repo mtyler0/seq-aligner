@@ -88,7 +88,7 @@ class AlignNW(AlignerBaseClass):
         gap = max(gaps1, gaps2)
 
         keys = ["aligned_seq1", "match_identifiers", "aligned_seq2","score", "percent_id", "gap_count"]
-        vals = [top, matches, bottom, score, percent_identity, gap]
+        vals = [top, matches, bottom, f"{int(score):.0f}", f"{percent_identity:.1f}%", gap]
         aligned_seq = dict(zip(keys, vals))
 
         # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs

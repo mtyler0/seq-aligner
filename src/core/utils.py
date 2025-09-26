@@ -29,12 +29,14 @@ def get_fasta_seq(fasta_file):
 
     with open(fasta_file) as fasta:
         contents = fasta.readlines()
-        current_sequence = ""
-        is_multiseq = False
-        for i, line in enumerate(contents):
-            if line[0] == ">":
-                current_sequence = contents[i + 1].strip()
-        # Fix!!! Disallow files with >2 seqs?
+        extension = fasta_file.rsplit(".", 1)[1].lower()
+        if extension == "fasta":
+            seq = contents[1:]
+            seq = "".join(seq).strip()
+        elif extension in ("docx", "txt"):
+            seq = "".join(contents)
+
+        # Get name from file
         if "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
             name_end = fasta_file.index(".")
@@ -42,4 +44,4 @@ def get_fasta_seq(fasta_file):
         else:
             name = fasta_file
 
-        return name, current_sequence, is_multiseq
+        return name, seq

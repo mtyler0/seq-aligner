@@ -80,6 +80,7 @@ def post_form():
         seq1_path = save_file(seq1_file)
         seq2_path = save_file(seq2_file)
         params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
+        print(params)
 
     db = get_db()
     cursor = db.cursor() # type: ignore
@@ -196,8 +197,8 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
         return "Input Sequence 1", "Input Sequence 2", a.get_alignment(sequence1_path, sequence2_path), \
                 "Input Sequence 1", "Input Sequence 2", b.get_alignment(sequence1_path, sequence2_path)    
 
-    sequence1_name, sequence1, is_multiseq = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
-    sequence2_name, sequence2, is_multiseq = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
+    sequence1_name, sequence1 = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
+    sequence2_name, sequence2 = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
 
     nw = a.get_alignment(sequence1, sequence2)
     sw = b.get_alignment(sequence1, sequence2)

@@ -26,7 +26,6 @@ def get_fasta_seq(fasta_file):
     Returns:
         Sequence as string
     """
-
     with open(fasta_file) as fasta:
         contents = fasta.readlines()
         extension = fasta_file.rsplit(".", 1)[1].lower()
@@ -45,3 +44,38 @@ def get_fasta_seq(fasta_file):
             name = fasta_file
 
         return name, seq
+
+
+def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
+        """
+        Formats alignment in an NCBI BLAST-like style:
+        seq1 and seq2 are aligned strings (with gaps),
+        matches is the '|' or '.' line.
+        """
+        output_lines = []
+        i1, i2 = start1, start2  # Current positions in original sequences
+
+        for i in range(0, len(seq1), line_length):
+            s1_chunk = seq1[i:i+line_length]
+            s2_chunk = seq2[i:i+line_length]
+            m_chunk = matches[i:i+line_length]
+
+            # Figure out start and end positions without counting gaps
+            start_pos1 = i1
+            start_pos2 = i2
+
+            end_pos1 = i1 + sum(c != "-" for c in s1_chunk) - 1
+            end_pos2 = i2 + sum(c != "-" for c in s2_chunk) - 1
+
+            # Build each section
+            top_line = f"Query  {start_pos1:<4} {s1_chunk}    {end_pos1+1 if end_pos1>=start_pos1 else start_pos1}"
+            mid_line = f"       {'':<4} {m_chunk}"
+            bot_line = f"Sbjct  {start_pos2:<4} {s2_chunk}    {end_pos2+1 if end_pos2>=start_pos2 else start_pos2}"
+
+            output_lines.extend([top_line, mid_line, bot_line, ""])
+
+            # Update sequence counters
+            i1 = end_pos1 + 1
+            i2 = end_pos2 + 1
+
+        return "\n".join(output_lines)

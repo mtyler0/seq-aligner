@@ -1,4 +1,6 @@
 from core.aligner_base import AlignerBaseClass
+from core.utils import format_alignment
+
 
 class AlignNW(AlignerBaseClass):
     """
@@ -77,6 +79,7 @@ class AlignNW(AlignerBaseClass):
                 current_aligned1 = "-"
                 gaps2 += 1
 
+            # Build sequence in proper order
             top = current_aligned1 + top
             bottom = current_aligned2 + bottom
             matches = match_identifier + matches
@@ -87,10 +90,6 @@ class AlignNW(AlignerBaseClass):
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 
-        keys = ["aligned_seq1", "match_identifiers", "aligned_seq2","score", "percent_id", "gap_count"]
-        vals = [top, matches, bottom, f"{int(score):.0f}", f"{percent_identity:.1f}%", gap]
-        aligned_seq = dict(zip(keys, vals))
-
-        # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs
-        # f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
-        return vals
+        vals = format_alignment(top, matches, bottom)
+        
+        return vals, int(score), f"{percent_identity:.1f}", gap

@@ -2,36 +2,46 @@
 
 
 {% block body %}
-<div class="logo">
+<!-- <div class="logo">
     <img src="{{ url_for('static', filename='/images/fluxaipfp.jpg') }}" alt="Not Here" width="100" height="100">
-</div>
+</div> -->
+
 <div class="content">
     <div class="pageTitle">Sequence Alignment Tool</div>
+
     <div class="entry">
         <form method="POST" action="/submit_form" enctype="multipart/form-data">
+
             <div class="input-label">
                 <label for="myseq">Enter a query sequence:</label>
             </div>
+
             <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value=""></textarea>
+            
             <div class="myfile">
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq1file" name="seq1file">
             </div>
         </div>
+
         <div class="entry">
             <div class="input-label">
                 <label for="myseq">Enter a subject sequence:</label>
             </div>
+
             <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value=""></textarea>
+            
             <div class="myfile">
                 <label for="myfile">Upload</label>
                 <input type="file" id="seq2file" name="seq2file">
             </div>
         </div>
+
         <div class="parameters">
             <div>
                 <label for="penalties" id="param">Change algorithm parameters</label>
             </div>
+
             <label for="match" id="param">Match Score:</label>
             <select name="match">
                 {% for item in [-4, -3, -2, -1, 0] %}
@@ -42,6 +52,7 @@
                 <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
             </select><br>
+
             <label for="mismatch" id="param">Mismatch Penalty:</label>
             <select name="mismatch">
                 {% for item in [-4, -3, -2] %}
@@ -52,6 +63,7 @@
                 <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
             </select><br>
+
             <label for="gap" id="param">Gap Penalty:</label>
             <select name="gap">
                 {% for item in [-4, -3] %}
@@ -62,6 +74,7 @@
                 <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
             </select><br>
+
             <label for="type" id="param">Molecule Type:</label>
             <select name="type" id="paramA">
                 <option value="DNA" selected>DNA</option>
@@ -117,14 +130,6 @@
                 <a class="prev_jobs" href="/jobs">Previous Jobs</a>
             </div>
         </form>
-    </div>
-    <div class="links">
-        <a href="https://www.linkedin.com/in/mtyler0">
-            <i class="fa fa-linkedin" style="font-size:36px" target="_blank" title="LinkedIn"></i>
-        </a>
-        <a href="https://github.com/mtyler0">
-            <i class="fa fa-github" style="font-size:36px" title="GitHub"></i>
-        </a>
     </div>
 </div>
 {% endblock %}

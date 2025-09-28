@@ -3,18 +3,24 @@
 {% block body %}
 <div class="content">
     <div class="pageTitle">Sequence Alignment Output</div>
+
     <div id="aligner">
         <label for="aligned">Needleman-Wunsch alignment of {{ nw_seq1 }} and {{ nw_seq2 }}:</label>
-        <pre>{{ nw_alignment }}</pre>
+        <div class="center-wrapper">
+            <pre class="alignment-container">{{ nw_alignment }}</pre>
+        </div>
         <div class="stats">
             <p>Score: {{ nw_score }}</p>
             <p>Percent Identical: {{ nw_percent_id }}</p>
             <p>Gaps: {{ nw_gaps }}</p>
         </div>
     </div>
+
     <div id="sw_aligner">
         <label for="alignedsw">Smith-Waterman alignment of {{ sw_seq1 }} and {{ sw_seq2 }}:</label>
-        <pre>{{ sw_alignment }}</pre>
+        <div class="center-wrapper">
+            <pre class="alignment-container">{{ sw_alignment }}</pre>
+        </div>
         <div class="stats">
             <p>Score: {{ sw_score }}</p>
             <p>Percent Identical: {{ sw_percent_id }}</p>
@@ -31,4 +37,5 @@
         <a href="/jobs">Previous Jobs</a>
     </div>
 </div>
+{% block footer %}{% endblock %}
 {% endblock %}

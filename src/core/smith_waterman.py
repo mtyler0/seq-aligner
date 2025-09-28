@@ -1,4 +1,6 @@
 from core.aligner_base import AlignerBaseClass
+from core.utils import format_alignment
+
 
 class AlignSW(AlignerBaseClass):
     """
@@ -80,26 +82,12 @@ class AlignSW(AlignerBaseClass):
             bottom = current_aligned2 + bottom
             matches = match_identifier + matches
 
-        """
-        seq1_start = seq1.index(top[0])
-        seq1_end = seq1.index(top[-1])
-        seq2_start = seq2.index(top[0])
-        seq2_end = seq2.index(top[-1])
-        leading_seq1 = seq1[:seq1_start]
-        trailing_seq1 = seq1[seq1_end:]
-        leading_seq2 = seq2[:seq2_start]
-        trailing_seq2 = seq2[seq2_end:]
-        """
         final_length = len(top)
         if final_length < 1:
             return "No alignment possible within the given parameters"
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 
-        keys = ["aligned_seq1", "match_identifiers", "aligned_seq2", "score", "percent_id", "gap_count"]
-        vals = [top, matches, bottom, f"{int(max_score):.0f}", f"{percent_identity:.1f}%", gap]
-        aligned_seq = dict(zip(keys, vals))
+        vals = format_alignment(top, matches, bottom)
 
-        # Old f string for preformatted HTML insertion as plain text. Switching to data structure output to have frontend handle display of seqs
-        # f"{top}\n{matches}\n{bottom}\n\nScore: {score:.0f}\nPercent Identical: {percent_identity:.1f}%\nGaps: {gap}"
-        return vals
+        return vals, int(max_score), f"{percent_identity:.1f}", gap

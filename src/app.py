@@ -64,7 +64,7 @@ def post_form():
     matrix = request.form.get("protein-matrix")
     
     if not input:
-        flash("Error: No file/text input")
+        flash("Error: Missing file/text input")
         return redirect("/")
     elif text_input:
         seq1_text = request.form["SUBJECT"]
@@ -80,7 +80,6 @@ def post_form():
         seq1_path = save_file(seq1_file)
         seq2_path = save_file(seq2_file)
         params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
-        print(params)
 
     db = get_db()
     cursor = db.cursor() # type: ignore
@@ -190,26 +189,29 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
         matrix = get_aa_matrix("resources\\blosum62.txt")
     else:
         matrix = None
+
     a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
 
     if is_text:
-        return "Input Sequence 1", "Input Sequence 2", a.get_alignment(sequence1_path, sequence2_path), \
-                "Input Sequence 1", "Input Sequence 2", b.get_alignment(sequence1_path, sequence2_path)    
-
-    sequence1_name, sequence1 = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
-    sequence2_name, sequence2 = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
+        sequence1_name = "Input Sequence 1"
+        sequence2_name = "Input Sequence 2"
+        sequence1 = sequence1_path
+        sequence2 = sequence2_path
+    else:
+        sequence1_name, sequence1 = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
+        sequence2_name, sequence2 = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
 
     nw = a.get_alignment(sequence1, sequence2)
     sw = b.get_alignment(sequence1, sequence2)
-    nw_result = f"{nw[0]}\n{nw[1]}\n{nw[2]}"
-    sw_result = f"{sw[0]}\n{sw[1]}\n{sw[2]}"
-    score = nw[3]
-    percent_id = nw[4]
-    gaps = nw[5]
-    score2 = sw[3]
-    percent_id2 = sw[4]
-    gaps2 = sw[5]
+    nw_result = nw[0]
+    sw_result = sw[0]
+    score = nw[1]
+    percent_id = nw[2]
+    gaps = nw[3]
+    score2 = sw[1]
+    percent_id2 = sw[2]
+    gaps2 = sw[3]
     
     return sequence1_name, sequence2_name, nw_result, \
             sequence1_name, sequence2_name, sw_result, \

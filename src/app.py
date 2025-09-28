@@ -55,8 +55,7 @@ def index():
 def post_form():
     text_input: str = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
     input: bool = len(text_input) > 0 or \
-        (request.files.get("seq1file").filename != "" and \
-            request.files.get("seq2file").filename != "")
+        (request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "") #type: ignore
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
     gap = request.form.get("gap", type=int)

@@ -2,7 +2,7 @@ def get_aa_matrix(matrix_file):
     """
     Returns a scoring matrix from .txt file
 
-    :param aa_filepath: path to blosum62 or pam160 matrix (for protein alignment)
+    :param matrix_file: path to blosum62 or pam160 matrix (for protein alignment)
     :return: nested dictionary scoring matrix
     """
     with open(matrix_file) as b:
@@ -63,7 +63,6 @@ def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
             # Figure out start and end positions without counting gaps
             start_pos1 = i1
             start_pos2 = i2
-
             end_pos1 = i1 + sum(c != "-" for c in s1_chunk) - 1
             end_pos2 = i2 + sum(c != "-" for c in s2_chunk) - 1
 

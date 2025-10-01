@@ -29,19 +29,19 @@ def get_fasta_seq(fasta_file):
     with open(fasta_file) as fasta:
         contents = fasta.readlines()
         extension = fasta_file.rsplit(".", 1)[1].lower()
-        if extension == "fasta":
+        
+        # Determine format and get raw sequence and name accordingly
+        if ">" in contents[0] or extension == "fasta":
             seq = contents[1:]
             seq = "".join(seq).strip()
-        elif extension in ("docx", "txt"):
-            seq = "".join(contents)
-
-        # Get name from file
-        if "\\" in fasta_file:
+            name = contents[0][1:]
+        elif "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
             name_end = fasta_file.index(".")
             name = fasta_file[name_start:name_end]
         else:
             name = fasta_file
+        seq = "".join(contents)
 
         return name, seq
 

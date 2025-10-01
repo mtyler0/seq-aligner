@@ -147,17 +147,6 @@ a:active {
   text-decoration: none;
 }
 
-a[class="prev_jobs"] {
-    color:rgba(255, 255, 255, 0.749);
-    text-decoration: underline
-}
-a[class="prev_jobs"]:visited {
-    text-decoration: none
-}
-a[class="prev_jobs"]:hover {
-    text-decoration: underline
-}
-
 .alignment-container {
     display: inline-block;
     text-align: left;
@@ -172,5 +161,5 @@ a[class="prev_jobs"]:hover {
     background-color: #222;
     color: white;
     text-align: center;
-    padding: 10px;
+    padding: 7px;
 }

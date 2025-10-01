@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = "2nf38-f2n398"
 DATABASE = "data\\saved_jobs.db"
 UPLOAD_FOLDER = "data\\uploaded_files"
-ALLOWED_EXTENSIONS = {"fasta", "txt", "docx"}
+ALLOWED_EXTENSIONS = {"fasta", "txt"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
@@ -28,21 +28,16 @@ def allowed_file(filename: str) -> bool:
 
 
 def save_file(file):
-    if not file.filename:
-        flash("No selected file")
-        return redirect("/")
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(path)
-        return path
+    if not file.filename or not file:
+        raise ValueError("No selected file")
+    if not allowed_file(file.filename):
+        raise ValueError("Unsupported file type")
+    filename = secure_filename(file.filename)
+    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(path)
+    return path
 
 
-@app.teardown_appcontext
-def close_conneciton(exception):
-    db = getattr(g, "_database", None)
-    if db is not None:
-        db.close()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -74,10 +69,14 @@ def post_form():
             flash(f"ERROR: {e}")
             return redirect("/")
     else:
-        seq1_file = request.files["seq1file"]
-        seq2_file = request.files["seq2file"]
-        seq1_path = save_file(seq1_file)
-        seq2_path = save_file(seq2_file)
+        try:
+            seq1_file = request.files["seq1file"]
+            seq2_file = request.files["seq2file"]
+            seq1_path = save_file(seq1_file)
+            seq2_path = save_file(seq2_file)
+        except ValueError as e:
+            flash(f"ERROR: {str(e)}")
+            return redirect("/")
         params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
 
     db = get_db()
@@ -182,6 +181,13 @@ def get_job_by_id(job_id):
         sw_seq2=job["sw_seq2_name"])
 
 
+@app.teardown_appcontext
+def close_conneciton(exception):
+    db = getattr(g, "_database", None)
+    if db is not None:
+        db.close()
+
+
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False):
     if molecule == "Protein":
@@ -218,5 +224,4 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
 
 
 if __name__ == "__main__":
-    #main()#match, mismatch, gap)
     app.run(debug=True)

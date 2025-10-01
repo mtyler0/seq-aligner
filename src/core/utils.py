@@ -27,21 +27,24 @@ def get_fasta_seq(fasta_file):
         Sequence as string
     """
     with open(fasta_file) as fasta:
-        contents = fasta.readlines()
+        contents = [i.strip() for i in fasta.readlines()]
         extension = fasta_file.rsplit(".", 1)[1].lower()
+        seq = ""
         
         # Determine format and get raw sequence and name accordingly
         if ">" in contents[0] or extension == "fasta":
-            seq = contents[1:]
-            seq = "".join(seq).strip()
-            name = contents[0][1:]
+            pre_seq = contents[1:]
+            pre_seq = "".join(pre_seq).strip()
+            name = contents[0]
+            seq = "".join(pre_seq)
         elif "\\" in fasta_file:
             name_start = fasta_file.index("\\") + 1
             name_end = fasta_file.index(".")
             name = fasta_file[name_start:name_end]
+            seq = "".join(contents)
         else:
             name = fasta_file
-        seq = "".join(contents)
+            seq = "".join(contents)
 
         return name, seq
 
@@ -50,7 +53,7 @@ def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
         """
         Formats alignment in an NCBI BLAST-like style:
         seq1 and seq2 are aligned strings (with gaps),
-        matches is the '|' or '.' line.
+        matches is the '|' or '.' line
         """
         output_lines = []
         i1, i2 = start1, start2  # Current positions in original sequences

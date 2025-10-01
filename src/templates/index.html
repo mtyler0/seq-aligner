@@ -16,7 +16,7 @@
                 <label for="myseq">Enter a query sequence:</label>
             </div>
 
-            <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value=""></textarea>
+            <textarea id="seq1" class="reset" rows="5" cols="80" name="QUERY" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters."></textarea>
             
             <div class="myfile">
                 <label for="myfile">Upload</label>
@@ -29,7 +29,7 @@
                 <label for="myseq">Enter a subject sequence:</label>
             </div>
 
-            <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters." value=""></textarea>
+            <textarea id="seq2" class="reset" rows="5" cols="80" name="SUBJECT" suggesthint="Input limited to 100,000 letters for either input sequence. The total length of both query and subject may not exceed 150,000 letters."></textarea>
             
             <div class="myfile">
                 <label for="myfile">Upload</label>
@@ -122,11 +122,6 @@
                         </div>
                     {% endif %}
                 {% endwith %}
-                <!-- <script>
-                    setTimeout(function() {
-                        window.location.href = "{{ url_for('submit') }}";
-                    }, 2000);
-                </script> -->
                 <a class="prev_jobs" href="/jobs">Previous Jobs</a>
             </div>
         </form>

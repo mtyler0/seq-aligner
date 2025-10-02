@@ -1,10 +1,10 @@
-import sqlite3
+import psycopg
 import os
 from werkzeug.utils import secure_filename
 from flask import g
+from dotenv import load_dotenv
 
 
-DATABASE = "data\\saved_jobs.db"
 ALLOWED_EXTENSIONS = {"fasta", "txt"}
 
 
@@ -94,10 +94,17 @@ def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
 
 
 def get_db():
+    load_dotenv()
+    
     db = getattr(g, "_database", None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
+        db = g._database = psycopg.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+        )
         return db
 
 

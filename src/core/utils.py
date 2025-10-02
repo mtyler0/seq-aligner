@@ -1,3 +1,13 @@
+import sqlite3
+import os
+from werkzeug.utils import secure_filename
+from flask import g
+
+
+DATABASE = "data\\saved_jobs.db"
+ALLOWED_EXTENSIONS = {"fasta", "txt"}
+
+
 def get_aa_matrix(matrix_file):
     """
     Returns a scoring matrix from .txt file
@@ -81,3 +91,26 @@ def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
             i2 = end_pos2 + 1
 
         return "\n".join(output_lines)
+
+
+def get_db():
+    db = getattr(g, "_database", None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+        db.row_factory = sqlite3.Row
+        return db
+
+
+def allowed_file(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def save_file(file, folder):
+    if not file.filename or not file:
+        raise ValueError("No selected file")
+    if not allowed_file(file.filename):
+        raise ValueError("Unsupported file type")
+    filename = secure_filename(file.filename)
+    path = os.path.join(folder, filename)
+    file.save(path)
+    return path

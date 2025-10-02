@@ -2,42 +2,11 @@ from core.utils import *
 from core.needleman_wunsch import *
 from core.smith_waterman import *
 from flask import Flask, render_template, request, redirect, g, flash, url_for
-import sqlite3
-import os
-from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 app.secret_key = "2nf38-f2n398"
-DATABASE = "data\\saved_jobs.db"
-UPLOAD_FOLDER = "data\\uploaded_files"
-ALLOWED_EXTENSIONS = {"fasta", "txt"}
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-
-def get_db():
-    db = getattr(g, "_database", None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-        return db
-
-
-def allowed_file(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def save_file(file):
-    if not file.filename or not file:
-        raise ValueError("No selected file")
-    if not allowed_file(file.filename):
-        raise ValueError("Unsupported file type")
-    filename = secure_filename(file.filename)
-    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    file.save(path)
-    return path
-
-
+app.config["UPLOAD_FOLDER"] = "data\\uploaded_files"
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -48,6 +17,7 @@ def index():
 # Send data to algorithm, store in db, then redirect to submit page
 @app.route("/submit_form", methods=["POST"])
 def post_form():
+    upload_folder = app.config["UPLOAD_FOLDER"]
     text_input: str = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
     input: bool = len(text_input) > 0 or \
         (request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "") #type: ignore
@@ -56,7 +26,7 @@ def post_form():
     gap = request.form.get("gap", type=int)
     molecule = request.form.get("type")
     matrix = request.form.get("protein-matrix")
-    
+
     if not input:
         flash("Error: Missing file/text input")
         return redirect("/")
@@ -72,8 +42,8 @@ def post_form():
         try:
             seq1_file = request.files["seq1file"]
             seq2_file = request.files["seq2file"]
-            seq1_path = save_file(seq1_file)
-            seq2_path = save_file(seq2_file)
+            seq1_path = save_file(seq1_file, upload_folder)
+            seq2_path = save_file(seq2_file, upload_folder)
         except ValueError as e:
             flash(f"ERROR: {str(e)}")
             return redirect("/")

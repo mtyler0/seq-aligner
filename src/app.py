@@ -2,7 +2,7 @@ from core.utils import *
 from core.needleman_wunsch import *
 from core.smith_waterman import *
 from flask import Flask, render_template, request, redirect, g, flash, url_for
-from psycopg import rows
+from psycopg.rows import dict_row
 
 
 app = Flask(__name__)
@@ -18,11 +18,11 @@ def index():
 # Send data to algorithm, store in db, then redirect to submit page
 @app.route("/submit_form", methods=["POST"])
 def post_form():
-    # Fix this
     upload_folder = app.config["UPLOAD_FOLDER"]
     text_input: str = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
-    input: bool = len(text_input) > 0 or \
-        (request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "") #type: ignore
+    input: bool = len(text_input) > 0 or (
+        request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "" #type: ignore
+        ) 
 
     # Scoring params
     match = request.form.get("match", type=int)
@@ -34,31 +34,22 @@ def post_form():
     if not input:
         flash("Error: Missing file/text input")
         return redirect("/")
-    elif text_input:
-        seq1_text = request.form["SUBJECT"]
-        seq2_text = request.form["QUERY"]
-        try:
+
+    try:
+        if text_input:
+            seq1_text = request.form["SUBJECT"]
+            seq2_text = request.form["QUERY"]
             params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
-        except Exception as e:
-            flash(f"ERROR: {e}")
-            return redirect("/")
-    else:
-        try:
+        else:
             seq1_file = request.files["seq1file"]
             seq2_file = request.files["seq2file"]
             seq1_path = save_file(seq1_file, upload_folder)
             seq2_path = save_file(seq2_file, upload_folder)
-        except ValueError as e:
-            flash(f"ERROR: {str(e)}")
-            return redirect("/")
-        params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
+            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
 
     # Use nested with statements here
-    db = get_db()
-    try:
-        cursor = db.cursor(row_factory=dict_row) # type: ignore
-        with cursor as c:
-            try:
+        with get_db() as conn:
+            with conn.cursor(row_factory=dict_row) as c:
                 c.execute(
                     """
                     INSERT INTO jobs (
@@ -78,38 +69,36 @@ def post_form():
                     percent_id2,
                     gaps2
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
                     """, (match, mismatch, gap, *params)
                     )
                 job_id = c.fetchone()[0] # type: ignore
-                db.commit() # type: ignore
-                return redirect(url_for("submit", job_id=job_id))
-            except Exception as e:
-                db.rollback() # type: ignore
-                print("DB insert failed:", e)
-                flash("DB insert failed.")
-                return redirect(url_for("index"))
-
-    finally:
-        db.close() # type: ignore
-
+                
+        return redirect(url_for("submit", job_id=job_id))
+    
+    except Exception as e:
+        print(f"Type of e: {type(e)}, value: {e}")
+        flash(f"ERROR: {e}")
+        return redirect(url_for("index"))
+    
 
 # Get alignment data for the current job ID
 @app.route("/submit")
 def submit():
     job_id = request.args.get("job_id")
-    db = get_db()
+    print(job_id)
     try:
-        cursor = db.cursor(row_factory=dict_row) # type: ignore
-        with cursor as c:
-            c.execute("SELECT * FROM jobs WHERE rowid = ?", (job_id,))
-            job = cursor.fetchone()
+        with get_db() as conn:
+            with conn.cursor(row_factory=dict_row) as c:
+                c.execute("SELECT * FROM jobs WHERE id = %s", (job_id,))
+                job = c.fetchone()
 
         if job is None:
             flash("Job not found.", "error")
             return redirect(url_for("index"))
 
-        return render_template("submit_form.html", 
+        return render_template(
+            "submit_form.html", 
             nw_alignment=job["nw_result"],
             nw_seq1=job["nw_seq1_name"],
             nw_seq2=job["nw_seq2_name"],
@@ -121,43 +110,47 @@ def submit():
             sw_percent_id=job["percent_id2"],
             sw_gaps=job["gaps2"],
             sw_seq1=job["sw_seq1_name"],
-            sw_seq2=job["sw_seq2_name"])
-    finally:
-        db.close() # type: ignore
-
+            sw_seq2=job["sw_seq2_name"]
+            )
+        
+    except Exception as e:
+        print(f"ERROR: {e}")
+        flash(f"ERROR: {e}")
+        return redirect(url_for("index"))
 
 # Retrieve all past data
 @app.route("/jobs")
 def get_jobs():
-    db = get_db()
     try:
-        cursor = db.cursor(row_factory=dict_row) # type: ignore
-        with cursor as c:
-            c.execute("SELECT rowid, * FROM jobs WHERE match_score IS NOT NULL ORDER BY rowid DESC")
-            results = c.fetchall()
-            job_id = c.fetchone()[0] # type: ignore
+        with get_db() as conn:
+            with conn.cursor(row_factory=dict_row) as c:
+                c.execute("SELECT id, * FROM jobs WHERE match_score IS NOT NULL ORDER BY id DESC")
+                results = c.fetchall()
+                job_id = c.fetchone()[0] # type: ignore
+
         return render_template("jobs.html",results=results, job_id=job_id)
-    finally:
-        db.close() # type: ignore
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        flash(f"ERROR: {e}")
+        return redirect(url_for("index"))
 
 
 # Retrieve data for specific job ID from list of jobs
 @app.route("/jobs/<int:job_id>")
 def get_job_by_id(job_id):
-    db = get_db()
-
     try:
-        cursor = db.cursor(row_factory=dict_row) # type: ignore
-        with cursor as c:
-            c.execute("SELECT * FROM jobs WHERE rowid = ?", (job_id,))
-            job = c.fetchone()[0] # type: ignore
+        with get_db() as conn:
+            with conn.cursor(row_factory=dict_row) as c:
+                c.execute("SELECT * FROM jobs WHERE id = %s", (job_id,))
+                job = c.fetchone()[0] # type: ignore
 
         if job is None:
             flash("Job not found.", "error")
             return redirect(url_for("index"))
 
-        db.close() #type: ignore
-        return render_template("submit_form.html", 
+        return render_template(
+            "submit_form.html", 
             nw_alignment=job["nw_result"],
             nw_seq1=job["nw_seq1_name"],
             nw_seq2=job["nw_seq2_name"],
@@ -169,9 +162,13 @@ def get_job_by_id(job_id):
             sw_percent_id=job["percent_id2"],
             sw_gaps=job["gaps2"],
             sw_seq1=job["sw_seq1_name"],
-            sw_seq2=job["sw_seq2_name"])
-    finally:
-            db.close() # type: ignore
+            sw_seq2=job["sw_seq2_name"]
+            )
+        
+    except Exception as e:
+        print(f"ERROR: {e}")
+        flash(f"ERROR: {e}")
+        return redirect(url_for("index"))
 
 
 @app.teardown_appcontext

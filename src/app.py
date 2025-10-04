@@ -72,7 +72,7 @@ def post_form():
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
                     """, (match, mismatch, gap, *params)
                     )
-                job_id = c.fetchone()[0] # type: ignore
+                job_id = c.fetchone()["id"] # type: ignore
                 
         return redirect(url_for("submit", job_id=job_id))
     
@@ -126,9 +126,8 @@ def get_jobs():
             with conn.cursor(row_factory=dict_row) as c:
                 c.execute("SELECT id, * FROM jobs WHERE match_score IS NOT NULL ORDER BY id DESC")
                 results = c.fetchall()
-                job_id = c.fetchone()[0] # type: ignore
 
-        return render_template("jobs.html",results=results, job_id=job_id)
+        return render_template("jobs.html",results=results)
 
     except Exception as e:
         print(f"ERROR: {e}")
@@ -143,7 +142,7 @@ def get_job_by_id(job_id):
         with get_db() as conn:
             with conn.cursor(row_factory=dict_row) as c:
                 c.execute("SELECT * FROM jobs WHERE id = %s", (job_id,))
-                job = c.fetchone()[0] # type: ignore
+                job = c.fetchone() # type: ignore
 
         if job is None:
             flash("Job not found.", "error")

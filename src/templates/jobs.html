@@ -15,7 +15,7 @@
         </tr>
         {% for job in results %}
             <tr>
-                <td><a href="{{ url_for('get_job_by_id', job_id=job['rowid']) }}">{{ job["rowid"] }}</td></a>
+                <td><a href="{{ url_for('get_job_by_id', job_id=job['id']) }}">{{ job["id"] }}</td></a>
                 <td>{{ job[1] }}</td>
                 <td>{{ job[2] }}</td>
                 <td>{{ job[3] }}</td>

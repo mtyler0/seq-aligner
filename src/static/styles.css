@@ -175,4 +175,5 @@ a:active {
 p {
     font-family: sans-serif;
     font-size: large;
+    padding: 1px;
 }

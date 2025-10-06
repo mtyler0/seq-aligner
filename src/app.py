@@ -73,14 +73,14 @@ def post_form():
                     """, (match, mismatch, gap, *params)
                     )
                 job_id = c.fetchone()["id"] # type: ignore
-                
+
         return redirect(url_for("submit", job_id=job_id))
-    
+
     except Exception as e:
         print(f"Type of e: {type(e)}, value: {e}")
         flash(f"ERROR: {e}")
         return redirect(url_for("index"))
-    
+
 
 # Get alignment data for the current job ID
 @app.route("/submit")
@@ -117,6 +117,7 @@ def submit():
         print(f"ERROR: {e}")
         flash(f"ERROR: {e}")
         return redirect(url_for("index"))
+
 
 # Retrieve all past data
 @app.route("/jobs")
@@ -213,4 +214,4 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -171,13 +171,6 @@ def get_job_by_id(job_id):
         return redirect(url_for("index"))
 
 
-@app.teardown_appcontext
-def close_conneciton(exception):
-    db = getattr(g, "_database", None)
-    if db is not None:
-        db.close()
-
-
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False):
     if molecule == "Protein":

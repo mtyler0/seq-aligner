@@ -7,7 +7,7 @@ from psycopg.rows import dict_row
 
 app = Flask(__name__)
 app.secret_key = "2nf38-f2n398"
-app.config["UPLOAD_FOLDER"] = "data\\uploaded_files"
+app.config["UPLOAD_FOLDER"] = "data/uploaded_files"
 
 
 @app.route("/", methods=["GET", "POST"])

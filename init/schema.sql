@@ -1,6 +1,6 @@
 CREATE TABLE jobs (
     id SERIAL PRIMARY KEY,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     match_score INT,
     mismatch INT,
     gap INT,

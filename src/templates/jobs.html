@@ -15,11 +15,11 @@
         </tr>
         {% for job in results %}
             <tr>
-                <td><a href="{{ url_for('get_job_by_id', job_id=job['id']) }}">{{ job["id"] }}</td></a>
-                <td>{{ job[1] }}</td>
-                <td>{{ job[2] }}</td>
-                <td>{{ job[3] }}</td>
-                <td>{{ job[4] }}</td>
+                <td><a href="{{ url_for('get_job_by_id', job_id=job['id']) }}">JOB#{{ job["id"] }}</td></a>
+                <td>{{ job["created_at"] }}</td>
+                <td>{{ job["match_score"] }}</td>
+                <td>{{ job["mismatch"] }}</td>
+                <td>{{ job["gap"] }}</td>
             </tr>
         {% endfor %}
     </table>

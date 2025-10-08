@@ -7,7 +7,7 @@ from psycopg.rows import dict_row
 
 app = Flask(__name__)
 app.secret_key = "2nf38-f2n398"
-app.config["UPLOAD_FOLDER"] = "data/uploaded_files"
+app.config["UPLOAD_FOLDER"] = "src/data/uploaded_files"
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -39,13 +39,13 @@ def post_form():
         if text_input:
             seq1_text = request.form["SUBJECT"]
             seq2_text = request.form["QUERY"]
-            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
+            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True, matrix=matrix)
         else:
             seq1_file = request.files["seq1file"]
             seq2_file = request.files["seq2file"]
             seq1_path = save_file(seq1_file, upload_folder)
             seq2_path = save_file(seq2_file, upload_folder)
-            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
+            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule, matrix=matrix)
 
     # Use nested with statements here
         with get_db() as conn:
@@ -172,11 +172,9 @@ def get_job_by_id(job_id):
 
 
 # Run algorithm
-def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False):
-    if molecule == "Protein":
-        matrix = get_aa_matrix("resources\\blosum62.txt")
-    else:
-        matrix = None
+def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix=None):
+    if molecule == "Protein" and matrix is not None:
+        matrix = get_aa_matrix(f"src/resources/{matrix.lower()}.txt")
 
     a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)

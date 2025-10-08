@@ -39,13 +39,13 @@ def post_form():
         if text_input:
             seq1_text = request.form["SUBJECT"]
             seq2_text = request.form["QUERY"]
-            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True, matrix=matrix)
+            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
         else:
             seq1_file = request.files["seq1file"]
             seq2_file = request.files["seq2file"]
             seq1_path = save_file(seq1_file, upload_folder)
             seq2_path = save_file(seq2_file, upload_folder)
-            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule, matrix=matrix)
+            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
 
         if type(params) == str:
             flash(params)
@@ -183,7 +183,7 @@ def close_connection(exception):
 
 
 # Run algorithm
-def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix="blosum62"):
+def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix=None):
     if molecule == "Protein" and matrix is not None:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         resource_path = os.path.join(base_dir, "..", "resources", f"{matrix.lower()}.txt")

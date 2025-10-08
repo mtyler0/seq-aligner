@@ -47,6 +47,10 @@ def post_form():
             seq2_path = save_file(seq2_file, upload_folder)
             params = main(match, mismatch, gap, seq1_path, seq2_path, molecule, matrix=matrix)
 
+        if type(params) == str:
+            flash(params)
+            return redirect("/")
+
     # Use nested with statements here
         with get_db() as conn:
             with conn.cursor(row_factory=dict_row) as c:
@@ -171,10 +175,20 @@ def get_job_by_id(job_id):
         return redirect(url_for("index"))
 
 
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, "_database", None)
+    if db is not None:
+        db.close()
+
+
 # Run algorithm
-def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix=None):
+def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix="blosum62"):
     if molecule == "Protein" and matrix is not None:
-        matrix = get_aa_matrix(f"src/resources/{matrix.lower()}.txt")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        resource_path = os.path.join(base_dir, "..", "resources", f"{matrix.lower()}.txt")
+        resource_path = os.path.normpath(resource_path)
+        matrix = get_aa_matrix(resource_path)
 
     a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
@@ -185,11 +199,15 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
         sequence1 = sequence1_path
         sequence2 = sequence2_path
     else:
-        sequence1_name, sequence1 = get_fasta_seq(sequence1_path) # DNA1: data\\seq1.fasta, Protein: data\\human_hbb.fasta
-        sequence2_name, sequence2 = get_fasta_seq(sequence2_path) # DNA2: data\\seq2.fasta, Protein: data\\puffer_hbb.fasta
+        sequence1_name, sequence1 = get_fasta_seq(sequence1_path)
+        sequence2_name, sequence2 = get_fasta_seq(sequence2_path)
 
-    nw = a.get_alignment(sequence1, sequence2)
-    sw = b.get_alignment(sequence1, sequence2)
+    try:
+        nw = a.get_alignment(sequence1, sequence2)
+        sw = b.get_alignment(sequence1, sequence2)
+    except ValueError as e:
+        return f"{e}: No alignment possible within the given parameters"
+
     nw_result = nw[0]
     sw_result = sw[0]
     score = nw[1]

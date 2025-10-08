@@ -86,7 +86,7 @@ class AlignNW(AlignerBaseClass):
 
         final_length = len(top)
         if final_length < 1:
-            return "No alignment possible within the given parameters"
+            raise ValueError
         percent_identity = (match_counter/final_length) * 100
         gap = max(gaps1, gaps2)
 

@@ -105,7 +105,7 @@ def get_db():
             host=os.getenv("DB_HOST"),
             port=os.getenv("DB_PORT")
         )
-        return db
+    return db
 
 
 def allowed_file(filename: str) -> bool:

@@ -8,7 +8,17 @@
 
 <div class="content">
     <div class="pageTitle">Sequence Alignment Tool</div>
-
+        <div class="errors">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class=flashes>
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
     <div class="entry">
         <form method="POST" action="/submit_form" enctype="multipart/form-data">
 
@@ -113,15 +123,6 @@
 
             <div class="submit">
                 <button type="submit">Submit</button><br>
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        <div class=flashes>
-                        {% for message in messages %}
-                            <p>{{ message }}</p>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
 
                 <div class="lbl"><label for="redirect-links"><a class="prev_jobs" href="/jobs">Previous Jobs</a></label></div>
             </div>

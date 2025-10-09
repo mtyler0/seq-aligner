@@ -19,11 +19,15 @@ def index():
 @app.route("/submit_form", methods=["POST"])
 def post_form():
     upload_folder = app.config["UPLOAD_FOLDER"]
-    text_input: str = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
-    input: bool = len(text_input) > 0 or (
+    text_input = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
+    file_input = (
         request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "" #type: ignore
         ) 
-
+    input: bool = len(text_input) > 0 or file_input
+    if text_input > 0 and file_input:
+        flash("Duplicate inputs detected. Please submit either text or file.")
+        return redirect("/")
+    
     # Scoring params
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
@@ -34,7 +38,7 @@ def post_form():
     if not input:
         flash("Error: Missing file/text input")
         return redirect("/")
-
+    
     try:
         if text_input:
             seq1_text = request.form["SUBJECT"]
@@ -184,11 +188,13 @@ def close_connection(exception):
 
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix=None):
-    if molecule == "Protein" and matrix is not None:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        resource_path = os.path.join(base_dir, "..", "resources", f"{matrix.lower()}.txt")
-        resource_path = os.path.normpath(resource_path)
-        matrix = get_aa_matrix(resource_path)
+    # if molecule == "Protein":
+    #     base_dir = os.path.dirname(os.path.abspath(__file__))
+    #     resource_path = os.path.join(base_dir, "..", "resources", f"{matrix.lower()}.txt")
+    #     resource_path = os.path.normpath(resource_path)
+    #     matrix = get_aa_matrix(resource_path)
+    if molecule.lower() == "protein":
+        matrix = get_aa_matrix("src/resources/blosum62.txt")
 
     a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)

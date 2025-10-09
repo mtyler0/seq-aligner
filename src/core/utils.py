@@ -16,11 +16,11 @@ def get_aa_matrix(matrix_file):
     :return: nested dictionary scoring matrix
     """
     with open(matrix_file) as b:
-        header = b.readline().upper().strip().replace('  ', ' ')
+        header = b.readline().lower().strip().replace('  ', ' ')
         species = header.split(' ')
         final_matrix = {}
         for line in b.readlines():
-            row = line.upper().strip().replace('  ', ' ').split(' ')
+            row = line.lower().strip().replace('  ', ' ').split(' ')
             species2 = row[0]
             species2_score = {}
             for i in range(len(species)):
@@ -56,7 +56,7 @@ def get_fasta_seq(fasta_file):
             name = fasta_file
             seq = "".join(contents)
 
-        return name, seq
+        return name, seq.lower()
 
 
 def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):

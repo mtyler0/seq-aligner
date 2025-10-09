@@ -91,32 +91,24 @@
                 <option value="Protein">Protein</option>
             </select><br>
 
+            <label for="matrix" id="matrix" style="display:none; margin-top: 6px;">Matrix:</label>
+            <select name="protein-matrix" id="protein-matrix" style="display:none; margin-top: 6px;">
+                <option value="BLOSUM62">BLOSUM62</option>
+                <option value="PAM160">PAM160</option>
+            </select>
+
             <script>
                 const target = document.getElementById("paramA");
-                let proteinSelect = null;
+                const proteinSelect = document.getElementById("protein-matrix");
+                const matrixLabel = document.getElementById("matrix")
 
                 target.addEventListener("change", function() {
                     if (this.value === "Protein") {
-                        if (!proteinSelect) {
-                            proteinSelect = document.createElement("select");
-                            proteinSelect.name = "protein-matrix";
-                            proteinSelect.id = "protein-matrix";
-
-                            const options = ["BLOSUM62", "PAM160"];
-                            options.forEach(opt => {
-                                const optionEl = document.createElement("option");
-                                optionEl.value = opt;
-                                optionEl.textContent = opt;
-                                proteinSelect.appendChild(optionEl);
-                            });
-                            
-                            target.after(proteinSelect);
-                        }
+                        proteinSelect.style.display = "inline-block";
+                        matrixLabel.style.display = "inline-block";
                     } else {
-                        if (proteinSelect) {
-                            proteinSelect.remove();
-                            proteinSelect = null;
-                        }
+                        proteinSelect.style.display = "none";
+                        matrixLabel.style.display = "none";
                     }
                 });
             </script>

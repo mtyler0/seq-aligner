@@ -19,13 +19,13 @@ def index():
 @app.route("/submit_form", methods=["POST"])
 def post_form():
     upload_folder = app.config["UPLOAD_FOLDER"]
-    text_input = request.form["SUBJECT"].strip() and request.form["QUERY"].strip()
+    text_input = request.form["SUBJECT"].strip().upper() and request.form["QUERY"].strip().upper()
     file_input = (
         request.files.get("seq1file").filename != "" and request.files.get("seq2file").filename != "" #type: ignore
-        ) 
+        )
     input: bool = len(text_input) > 0 or file_input
-    if text_input > 0 and file_input:
-        flash("Duplicate inputs detected. Please submit either text or file.")
+    if len(text_input) > 0 and file_input:
+        flash("Duplicate inputs detected. Please submit either text or file")
         return redirect("/")
     
     # Scoring params
@@ -43,18 +43,14 @@ def post_form():
         if text_input:
             seq1_text = request.form["SUBJECT"]
             seq2_text = request.form["QUERY"]
-            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True)
+            params = main(match, mismatch, gap, seq1_text, seq2_text, molecule, is_text=True, matrix=matrix)
         else:
             seq1_file = request.files["seq1file"]
             seq2_file = request.files["seq2file"]
             seq1_path = save_file(seq1_file, upload_folder)
             seq2_path = save_file(seq2_file, upload_folder)
-            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule)
-
-        if type(params) == str:
-            flash(params)
-            return redirect("/")
-
+            params = main(match, mismatch, gap, seq1_path, seq2_path, molecule, matrix=matrix)
+        
     # Use nested with statements here
         with get_db() as conn:
             with conn.cursor(row_factory=dict_row) as c:
@@ -86,7 +82,7 @@ def post_form():
 
     except Exception as e:
         print(f"Type of e: {type(e)}, value: {e}")
-        flash(f"ERROR: {e}")
+        flash(f"ERROR: {type(e)}: {e}")
         return redirect(url_for("index"))
 
 
@@ -188,13 +184,8 @@ def close_connection(exception):
 
 # Run algorithm
 def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text=False, matrix=None):
-    # if molecule == "Protein":
-    #     base_dir = os.path.dirname(os.path.abspath(__file__))
-    #     resource_path = os.path.join(base_dir, "..", "resources", f"{matrix.lower()}.txt")
-    #     resource_path = os.path.normpath(resource_path)
-    #     matrix = get_aa_matrix(resource_path)
-    if molecule.lower() == "protein":
-        matrix = get_aa_matrix("src/resources/blosum62.txt")
+    if molecule.lower() == "protein" and matrix is not None:
+        matrix = get_aa_matrix(f"src/resources/{matrix.lower()}.txt")
 
     a = AlignNW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
     b = AlignSW(molecule, aa_matrix=matrix, match=match, mismatch=mismatch, gap=gap)
@@ -211,16 +202,16 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
     try:
         nw = a.get_alignment(sequence1, sequence2)
         sw = b.get_alignment(sequence1, sequence2)
-    except ValueError as e:
-        return f"{e}: No alignment possible within the given parameters"
+    except ValueError:
+        return "No alignment possible within the given parameters"
 
     nw_result = nw[0]
     sw_result = sw[0]
     score = nw[1]
-    percent_id = nw[2]
-    gaps = nw[3]
     score2 = sw[1]
+    percent_id = nw[2]
     percent_id2 = sw[2]
+    gaps = nw[3]
     gaps2 = sw[3]
     
     return sequence1_name, sequence2_name, nw_result, \

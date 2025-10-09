@@ -48,6 +48,11 @@ label[id="param"]{
     border: none;
 }
 
+label[id="matrix"]{
+    background: none;
+    border: none;
+}
+
 .parameters select{
     font-size: 20px;
     margin: 5px;

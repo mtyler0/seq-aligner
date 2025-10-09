@@ -54,9 +54,9 @@ def get_fasta_seq(fasta_file):
             seq = "".join(contents)
         else:
             name = fasta_file
-            seq = "".join(contents)
+            seq = "".join(contents).lower()
 
-        return name, seq.lower()
+        return name, seq
 
 
 def format_alignment(seq1, matches, seq2, line_length=60, start1=1, start2=1):
@@ -121,4 +121,3 @@ def save_file(file, folder):
     path = os.path.join(folder, filename)
     file.save(path)
     return path
-

@@ -80,9 +80,13 @@ def post_form():
 
         return redirect(url_for("submit", job_id=job_id))
 
+    except ValueError as e:
+        flash(f"ERROR: {str(type(e))} {e}")
+        return redirect(url_for("index"))
+
     except Exception as e:
-        print(f"Type of e: {type(e)}, value: {e}")
-        flash(f"ERROR: {type(e)}: {e}")
+        print(f"Type of e: {str(type(e))}, value: {e}")
+        flash(f"ERROR: {str(type(e))} {e}")
         return redirect(url_for("index"))
 
 
@@ -202,8 +206,8 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
     try:
         nw = a.get_alignment(sequence1, sequence2)
         sw = b.get_alignment(sequence1, sequence2)
-    except ValueError:
-        return "No alignment possible within the given parameters"
+    except ValueError as e:
+        raise
 
     nw_result = nw[0]
     sw_result = sw[0]

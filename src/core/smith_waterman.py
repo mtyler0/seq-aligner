@@ -1,5 +1,5 @@
-from core.aligner_base import AlignerBaseClass
-from core.utils import format_alignment
+from src.core.aligner_base import AlignerBaseClass
+from src.core.utils import format_alignment
 
 
 class AlignSW(AlignerBaseClass):

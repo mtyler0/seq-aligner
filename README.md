@@ -48,7 +48,7 @@ This project implements two foundational pairwise sequence alignment algorithms,
 ## 🚀 Features
 
 - **Interactive Alignment Form:** Upload or paste sequences, select target database and scoring matrix dynamically.
-- **Backend Integration:** Uses implementations of the Needleman-Wunsch (global) and Smith-Waterman (local) algorithms for performing optimal sequence alignments.
+- **Backend Integration:** Uses implementations of the Needleman-Wunsch and Smith-Waterman algorithms for performing optimal sequence alignments.
 - **Customizable Parameters:** Modify match, mismatch, and gap penalties and choose between `BLOSUM62` and `PAM160` substitution matrices for protein scoring
 - **Robust Error Handling:** Gracefully manages invalid inputs, failed alignments, and improper file formats.
 - **Session-Based Job Tracking:** Users can view and reload past alignments during a session.

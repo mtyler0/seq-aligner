@@ -53,6 +53,9 @@ versus
 Smith–Waterman scoring:
 
 ![Example scoring matrix](src/static/images/matrix_example_sw.png)
+Source: https://rna.informatik.uni-freiburg.de/Teaching/index.jsp
+
+###🔹[Additional Information](https://bio.libretexts.org/Bookshelves/Computational_Biology/Book%3A_Computational_Biology_-_Genomes_Networks_and_Evolution_(Kellis_et_al.)/02%3A_Sequence_Alignment_and_Dynamic_Programming/2.05%3A_The_Needleman-Wunsch_Algorithm)
 
 ---
 

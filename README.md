@@ -86,7 +86,7 @@ cd sequence-aligner
 ```
 2. **Build and run with docker**
 ```bash
-docker compose --build -d
+docker compose up --build -d
 ```
 3. Access the app at http://localhost:5000
 

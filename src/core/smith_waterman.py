@@ -24,10 +24,7 @@ class AlignSW(AlignerBaseClass):
 
         for i in range(1, m + 1):
             for j in range(1, n + 1):
-                #try:
                 diagonal_score, vert_score, horizontal_score = self._score_cell(scoring_matrix, seq1, seq2, i, j)
-                #except KeyError:
-                #    raise
                 score = max(0, diagonal_score, horizontal_score, vert_score)
                 scoring_matrix[i, j] = score
 

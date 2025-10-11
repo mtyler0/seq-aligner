@@ -1,6 +1,7 @@
 CREATE TABLE jobs (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    molecule TEXT,
     match_score INT,
     mismatch INT,
     gap INT,

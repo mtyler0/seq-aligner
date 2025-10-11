@@ -1,5 +1,5 @@
-from src.core.aligner_base import AlignerBaseClass
-from src.core.utils import format_alignment
+from core.aligner_base import AlignerBaseClass
+from core.utils import format_alignment
 
 
 class AlignSW(AlignerBaseClass):
@@ -24,7 +24,10 @@ class AlignSW(AlignerBaseClass):
 
         for i in range(1, m + 1):
             for j in range(1, n + 1):
+                #try:
                 diagonal_score, vert_score, horizontal_score = self._score_cell(scoring_matrix, seq1, seq2, i, j)
+                #except KeyError:
+                #    raise
                 score = max(0, diagonal_score, horizontal_score, vert_score)
                 scoring_matrix[i, j] = score
 
@@ -55,7 +58,7 @@ class AlignSW(AlignerBaseClass):
         current_aligned1 = ""
         current_aligned2 = ""
 
-        # Backtrack starting at bottom right of matrix and build alignment string based on path score until
+        # Backtrack starting at bottom right of matrix and build alignment string based on path score until stop cell reached
         while path_matrix[maxi, maxj] != AlignerBaseClass.STOP:
             path = path_matrix[maxi, maxj]
             match_identifier = "."

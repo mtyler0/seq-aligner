@@ -5,9 +5,13 @@ from src.core.utils import *
 
 def test_alignmentNW():
     n = nw.AlignNW("DNA", None, match=1, mismatch=-1, gap=-2)
-    result = n.get_alignment("GATTCA","GACTGU")
-    score = result[1]
-    assert score == 0
+    s = sw.AlignSW("DNA", None, match=1, mismatch=-1, gap=-2)
+    result_n = n.get_alignment("GATTCA","GACTGU")
+    result_s = s.get_alignment("GATTCA","GACTGU")
+    score_n = result_n[1]
+    score_s = result_s[1]
+    assert score_n == 0
+    assert score_s == 2
     
     
 def test_fasta_parsing():

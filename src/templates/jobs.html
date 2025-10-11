@@ -3,26 +3,30 @@
 {% block body %}
 <div class="content">
     <div class="pageTitle">Jobs</div>
-    <div class="options"><label><a href="/">Home</a></label></div>
-    <div class="job-list">
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Time</th>
-            <th>Match</th>
-            <th>Mismatch</th>
-            <th>Gap</th>
-        </tr>
-        {% for job in results %}
-            <tr>
-                <td><a href="{{ url_for('get_job_by_id', job_id=job['id']) }}">JOB#{{ job["id"] }}</td></a>
-                <td>{{ job["created_at"] }}</td>
-                <td>{{ job["match_score"] }}</td>
-                <td>{{ job["mismatch"] }}</td>
-                <td>{{ job["gap"] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    </div>
+        <div class="options"><label><a href="/">Home</a></label></div>
+        <div class="job-list">
+            <div class="job-table">
+                <table cellpadding="8px"cellspacing="8px">
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Molecule</th>
+                        <th>Match</th>
+                        <th>Mismatch</th>
+                        <th>Gap</th>
+                    </tr>
+                    {% for job in results %}
+                        <tr>
+                            <td><a href="{{ url_for('get_job_by_id', job_id=job['id']) }}">JOB#{{ job["id"] }}</td></a>
+                            <td>{{ job["created_at"] }}</td>
+                            <td>{{ job["molecule"] }}</td>
+                            <td>{{ job["match_score"] }}</td>
+                            <td>{{ job["mismatch"] }}</td>
+                            <td>{{ job["gap"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
 </div>
 {% endblock %}

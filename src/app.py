@@ -28,7 +28,7 @@ def post_form():
         flash("Duplicate inputs detected. Please submit either text or file")
         return redirect("/")
     
-    # Scoring params
+    # Scoring params from index
     match = request.form.get("match", type=int)
     mismatch = request.form.get("mismatch", type=int)
     gap = request.form.get("gap", type=int)
@@ -51,12 +51,13 @@ def post_form():
             seq2_path = save_file(seq2_file, upload_folder)
             params = main(match, mismatch, gap, seq1_path, seq2_path, molecule, matrix=matrix)
         
-    # Use nested with statements here
+    # Use nested context manager to handle db connection and cursor
         with get_db() as conn:
             with conn.cursor(row_factory=dict_row) as c:
                 c.execute(
                     """
                     INSERT INTO jobs (
+                    molecule,
                     match_score,
                     mismatch,
                     gap,
@@ -73,17 +74,23 @@ def post_form():
                     percent_id2,
                     gaps2
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
-                    """, (match, mismatch, gap, *params)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+                    """, (molecule, match, mismatch, gap, *params)
                     )
                 job_id = c.fetchone()["id"] # type: ignore
 
         return redirect(url_for("submit", job_id=job_id))
 
+    # Rasied by get_alignment method in each algo if no alignment possible
     except ValueError as e:
         flash(f"ERROR: {str(type(e))} {e}")
         return redirect(url_for("index"))
 
+    # Rasied by _score_cell method if user inputs a letter that doesn't correspond to an amino acid/nucleotide
+    except KeyError as e:
+        flash(f"ERROR: {str(e)} is not an existing biomolecule")
+        return redirect("/")
+    
     except Exception as e:
         print(f"Type of e: {str(type(e))}, value: {e}")
         flash(f"ERROR: {str(type(e))} {e}")
@@ -206,7 +213,9 @@ def main(match, mismatch, gap, sequence1_path, sequence2_path, molecule, is_text
     try:
         nw = a.get_alignment(sequence1, sequence2)
         sw = b.get_alignment(sequence1, sequence2)
-    except ValueError as e:
+    except ValueError:
+        raise
+    except KeyError:
         raise
 
     nw_result = nw[0]

@@ -49,7 +49,10 @@ class AlignerBaseClass(ABC):
         if self.is_nucleotide:
             diagonal_score = scoring_matrix[i - 1, j - 1] + (self.match if seq1[i - 1] == seq2[j - 1] else self.mismatch)
         else: # Add key error handling for non-aa submissions or check first <<<<<<<<< 
-            diagonal_score = scoring_matrix[i - 1, j - 1] + self.aa[seq1[i - 1]][seq2[j - 1]]
+            try:
+                diagonal_score = scoring_matrix[i - 1, j - 1] + self.aa[seq1[i - 1]][seq2[j - 1]]
+            except KeyError:
+                raise
         vert_score = scoring_matrix[i - 1, j] + self.gap
         horizontal_score = scoring_matrix[i, j - 1] + self.gap
 

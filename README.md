@@ -8,6 +8,9 @@ A lightweight, full-stack Flask web app that performs **pairwise sequence alignm
 
 This project implements two foundational pairwise sequence alignment algorithms, with explicit scoring logic for nucleotides and proteins. These are core tools in bioinformatics for assessing sequence similarity, evolutionary relationships, and functional conservation.
 
+Example: 
+![Example scoring matrix](src/static/images/matrix_example_in.png)
+
 ### 🔹 Needleman–Wunsch Algorithm (Global Alignment)
 - **Purpose:** Aligns two sequences end-to-end, optimizing overall similarity.
 - **Mechanism:** Uses dynamic programming to fill a scoring matrix based on:
@@ -40,7 +43,10 @@ This project implements two foundational pairwise sequence alignment algorithms,
 - **Percent identity:** Fraction of identical positions in aligned region.
 - **Gap count:** Reflects insertions/deletions needed to achieve alignment.
 
+NW:
 ![Example scoring matrix](src/static/images/matrix_example_nw.png)
+
+SW:
 ![Example scoring matrix](src/static/images/matrix_example_sw.png)
 
 ---

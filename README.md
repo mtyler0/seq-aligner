@@ -137,7 +137,7 @@ seq-aligner/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/<your-username>/sequence-aligner.git
+git clone https://github.com/mtyler0/sequence-aligner.git
 cd sequence-aligner
 ```
 2. **Build and run with docker**
